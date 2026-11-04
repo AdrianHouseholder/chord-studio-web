@@ -39,6 +39,8 @@
   border-color: var(--accent);
   color: #e5fffb;
 }
+:root[data-theme="neon"] .visualizer .switches button { border-color: #246e69; }
+:root[data-theme="neon"] .visualizer .switches .selected { border-color: var(--accent); }
 :root[data-theme="neon"] :is(.volume input, .pitch-bend input) { accent-color: var(--accent); }
 :root[data-theme="neon"] .joystick-sustain[aria-pressed="true"] .toggle-track { background: #278e81; }
 :root[data-theme="neon"] :is(header, .control-grid) { border-color: #246e69; }
