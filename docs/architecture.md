@@ -1,6 +1,6 @@
 # Architecture and development
 
-Chord Studio is a client-only React application. `index.html` loads `src/main.jsx`, which renders `src/App.tsx`. The app coordinates the instrument and uses the guided tour and canvas visualizer in `src/components/`. `src/styles/instrument.css` defines presentation and themes. `src/music/chords.js` contains the pure chord calculation, tested by `src/music/chords.test.js`. There is no application server or backend in this project.
+Chord Studio is a client-only React application. `index.html` loads `src/main.tsx`, which renders `src/App.tsx`. The app coordinates the instrument and uses the guided tour and canvas visualizer in `src/components/`. `src/styles/instrument.css` defines presentation and themes. `src/music/chords.js` contains the pure chord calculation, tested by `src/music/chords.test.js`. There is no application server or backend in this project.
 
 ## Notes and audio path
 
