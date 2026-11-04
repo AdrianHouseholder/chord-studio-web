@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import { chordNotes, chordName, noteNames } from './music.js';
-import './style.css';
+import { chordNotes, chordName, noteNames } from './music/chords.js';
+import GuidedTour from './components/GuidedTour.jsx';
+import Visualizer from './components/Visualizer.jsx';
 
 const roman = ['I', 'ii', 'iii', 'IV', 'V', 'vi', 'vii°'];
 const keys = ['1', '2', '3', '4', '5', '6', '7'];
@@ -49,121 +49,7 @@ function createReverbGraph(context, selected) {
   return { input, output, wet };
 }
 
-function Visualizer({ analyser, active, theme, children }) {
-  const canvas = useRef(null);
-  const [mode, setMode] = useState('waveform');
-  useEffect(() => {
-    const element = canvas.current;
-    const ctx = element.getContext('2d');
-    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let frame;
-    const draw = () => {
-      const width = element.clientWidth, height = element.clientHeight;
-      const scale = window.devicePixelRatio || 1;
-      if (element.width !== Math.round(width * scale) || element.height !== Math.round(height * scale)) {
-        element.width = Math.round(width * scale); element.height = Math.round(height * scale);
-      }
-      ctx.setTransform(scale, 0, 0, scale, 0, 0);
-      ctx.clearRect(0, 0, width, height);
-      ctx.strokeStyle = ctx.fillStyle = getComputedStyle(element).color;
-      ctx.lineWidth = 2;
-      if (!active || !analyser.current) {
-        ctx.beginPath(); ctx.moveTo(0, height / 2); ctx.lineTo(width, height / 2); ctx.stroke();
-      } else if (mode === 'waveform') {
-        const data = new Uint8Array(analyser.current.fftSize);
-        analyser.current.getByteTimeDomainData(data);
-        ctx.beginPath();
-        data.forEach((value, i) => { const x = i * width / (data.length - 1), y = value * height / 256; if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); });
-        ctx.stroke();
-      } else {
-        const data = new Uint8Array(analyser.current.frequencyBinCount);
-        analyser.current.getByteFrequencyData(data);
-        const count = 48;
-        for (let i = 0; i < count; i++) {
-          const start = Math.floor(i * data.length / count), end = Math.floor((i + 1) * data.length / count);
-          let peak = 0; for (let j = start; j < end; j++) peak = Math.max(peak, data[j]);
-          const bar = peak * height / 255;
-          ctx.fillRect(i * width / count, height - bar, Math.max(1, width / count - 2), bar);
-        }
-      }
-    };
-    const tick = () => { draw(); frame = requestAnimationFrame(tick); };
-    const update = () => {
-      cancelAnimationFrame(frame);
-      if (document.hidden) return;
-      if (active && !motion.matches) tick(); else draw();
-    };
-    const observer = new ResizeObserver(update); observer.observe(element);
-    document.addEventListener('visibilitychange', update);
-    motion.addEventListener('change', update);
-    update();
-    return () => { cancelAnimationFrame(frame); observer.disconnect(); document.removeEventListener('visibilitychange', update); motion.removeEventListener('change', update); };
-  }, [mode, active, analyser, theme]);
-  return <section className="visualizer" aria-label="Audio visualizer"><div className="visualizer-header"><span className="section-label">AUDIO VISUALIZER</span><div className="switches" role="group" aria-label="Visualizer mode">{[['waveform', 'Waveform'], ['spectrum', 'Spectrum']].map(([value, label]) => <button type="button" key={value} className={mode === value ? 'selected' : ''} aria-pressed={mode === value} onClick={() => setMode(value)}>{label}</button>)}</div></div><div className="display-row">{children}<canvas ref={canvas} aria-hidden="true" /></div></section>;
-}
-const tourSteps = [
-  { title: 'Audio visualizer', anchor: '.visualizer', text: 'The display shows the current chord and the combined audio output. Switch between Waveform and Spectrum without changing the sound.' },
-  { title: 'Sound controls', anchor: '.controls', text: 'Choose the major key, voice, volume, reverb and chord color. Changes also affect sounding chords.' },
-  { title: 'Chord joystick', anchor: '.joystick-control', text: 'Drag the joystick or hold unassigned arrow keys to change sounding chords: up changes the third, right adds a seventh, left adds a suspension, and down adds a sixth. Diagonals combine colors. Joystick Sustain keeps a dragged direction after release.' },
-  { title: 'Pitch bend', anchor: '.pitch-bend', text: 'Move the slider up or down by up to 2 semitones. It changes sounding chords live. The center is normal pitch; Reset pitch bend returns to center immediately.' },
-  { title: 'Keyboard bindings', anchor: '.chord-header', text: 'Right-click a chord pad and press a key to bind it. Reusing a key unbinds its previous chord; Escape cancels. Bindings are saved in this browser.' },
-  { title: 'Play chords', anchor: '.pads', text: 'Hold a chord pad or its displayed keyboard binding to play. Hold multiple chords to layer them; drag across pads to move between chords.' },
-  { title: 'Sustain chords', anchor: '.pad-group .sustain', text: 'Enable Sustain before playing to keep a chord sounding after release. Press the latched chord again to silence it, or turn Sustain off.' },
-  { title: 'Stopping and resetting', anchor: '.reset-actions', text: 'Turn Everything Off silences chords and reverb tails, releases inputs, disables sustains and centers the joystick while preserving sound settings and bindings. Reset Configuration also restores instrument defaults and keyboard bindings; your theme and tour dismissal stay unchanged.' },
-];
-
-function GuidedTour({ onClose }) {
-  const [step, setStep] = useState(0);
-  const [position, setPosition] = useState({ left: 8, top: 8 });
-  const [spotlight, setSpotlight] = useState({ left: 0, top: 0, right: 0, bottom: 0 });
-  const panel = useRef(null);
-  useLayoutEffect(() => {
-    const target = document.querySelector(tourSteps[step].anchor);
-    target?.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
-    if (tourSteps[step].anchor === '.pitch-bend' && target && panel.current) {
-      const rect = target.getBoundingClientRect();
-      if (rect.bottom + panel.current.offsetHeight + 18 > window.innerHeight && rect.top < panel.current.offsetHeight + 18) {
-        window.scrollBy(0, rect.top - 8);
-      }
-    }
-    const place = () => {
-      if (!target || !panel.current) return;
-      const rect = target.getBoundingClientRect(), box = panel.current.getBoundingClientRect();
-      const clampX = value => Math.max(0, Math.min(window.innerWidth, value));
-      const clampY = value => Math.max(0, Math.min(window.innerHeight, value));
-      setSpotlight({ left: clampX(rect.left), top: clampY(rect.top), right: clampX(rect.right), bottom: clampY(rect.bottom) });
-      const left = Math.max(8, Math.min(rect.left, window.innerWidth - box.width - 8));
-      const below = rect.bottom + 10, above = rect.top - box.height - 10;
-      const top = below + box.height <= window.innerHeight - 8 ? below : above >= 8 ? above : Math.max(8, Math.min(below, window.innerHeight - box.height - 8));
-      setPosition({ left, top });
-    };
-    place();
-    window.addEventListener('scroll', place, true); window.addEventListener('resize', place);
-    const observer = new ResizeObserver(place);
-    if (target) observer.observe(target);
-    if (panel.current) observer.observe(panel.current);
-    return () => { observer.disconnect(); window.removeEventListener('scroll', place, true); window.removeEventListener('resize', place); };
-  }, [step]);
-  useEffect(() => { panel.current?.querySelector('[data-initial]')?.focus(); }, []);
-  useEffect(() => {
-    const escape = event => { if (event.key === 'Escape') { event.preventDefault(); onClose(); } };
-    window.addEventListener('keydown', escape);
-    return () => window.removeEventListener('keydown', escape);
-  }, [onClose]);
-  return <><div className="tour-backdrop" aria-hidden="true">
-    <div className="tour-shade" style={{ left: 0, top: 0, right: 0, height: spotlight.top }} />
-    <div className="tour-shade" style={{ left: 0, top: spotlight.top, width: spotlight.left, height: spotlight.bottom - spotlight.top }} />
-    <div className="tour-shade" style={{ left: spotlight.right, top: spotlight.top, right: 0, height: spotlight.bottom - spotlight.top }} />
-    <div className="tour-shade" style={{ left: 0, top: spotlight.bottom, right: 0, bottom: 0 }} />
-    <div className="tour-spotlight" style={{ left: spotlight.left, top: spotlight.top, width: spotlight.right - spotlight.left, height: spotlight.bottom - spotlight.top }} />
-  </div><div ref={panel} className="tour-panel" role="dialog" aria-label="Guided tour" aria-describedby="tour-description" style={position}>
-    <p className="tour-progress">Step {step + 1} of {tourSteps.length}</p>
-    <h2>{tourSteps[step].title}</h2><p id="tour-description">{tourSteps[step].text}</p>
-    <div className="tour-actions"><button type="button" onClick={onClose}>Close</button><button type="button" disabled={step === 0} onClick={() => setStep(step - 1)}>Back</button>{step === tourSteps.length - 1 ? <button type="button" onClick={onClose}>Finish</button> : <button type="button" data-initial onClick={() => setStep(step + 1)}>Next</button>}</div>
-  </div></>;
-}
-
-function App() {
+export default function App() {
   const [tourOpen, setTourOpen] = useState(() => {
     try { return localStorage.getItem('chord-tour-dismissed') !== 'true'; }
     catch { return true; }
@@ -416,5 +302,3 @@ function App() {
       <div className="chord-header"><span className="section-label">PLAY A CHORD</span><span>HOLD TO PLAY · RIGHT-CLICK TO BIND</span></div><div className={'pads' + (draggingPads ? ' dragging' : '')}>{roman.map((label,i)=><div className="pad-group" key={label}><button className={'pad '+(active.includes(i)?'active':'')} onContextMenu={e=>{e.preventDefault(); e.currentTarget.blur(); setBindingDegree(i);}} data-degree={i} onPointerDown={e=>{if (e.button !== 0) return; e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); padPointers.current.set(e.pointerId, i); setDraggingPads(true); press(i, `pointer:${e.pointerId}`);}} onPointerMove={movePadPointer} onPointerUp={endPadPointer} onPointerCancel={endPadPointer} onLostPointerCapture={endPadPointer} onKeyDown={e=>{if ((e.key===' ' || e.key==='Enter') && !e.repeat) { e.preventDefault(); press(i, `pad:${e.key}`); }}} onKeyUp={e=>{if(e.key===' ' || e.key==='Enter') release(i, `pad:${e.key}`);}} onBlur={()=>{release(i, 'pad: '); release(i, 'pad:Enter');}} aria-label={`Play chord ${label}`}><span>{label}</span><small>{bindings[i] === ' ' ? 'Space' : bindings[i] ?? '—'}</small></button><button type="button" className="sustain" aria-label={`Sustain chord ${label}`} aria-pressed={sustain[i]} onClick={()=>toggleSustain(i)}>Sustain</button></div>)}</div>{bindingDegree !== null && <div className="binding-overlay"><div className="binding-dialog" role="dialog" aria-modal="true" aria-label={`Bind chord ${roman[bindingDegree]}`}><strong>Bind chord {roman[bindingDegree]}</strong><p>Press a keyboard key to assign it. An existing assignment will be replaced.</p><p>Press Escape to cancel.</p><button type="button" onClick={()=>setBindingDegree(null)}>Cancel</button></div></div>}<div className="reset-actions"><button type="button" className="reset-configuration" onClick={turnEverythingOff}>Turn Everything Off</button><button type="button" className="reset-configuration" onClick={resetConfiguration}>Reset Configuration</button></div><div className="instrument-bottom"><span>MADE FOR PLAYING AROUND</span><span>✳ &nbsp; SOUND ON, WORLD OFF</span></div></section>
     {tourOpen && <GuidedTour onClose={closeTour}/>}</main>;
 }
-
-createRoot(document.getElementById('root')).render(<App/>);
