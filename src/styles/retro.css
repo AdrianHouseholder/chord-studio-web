@@ -1,0 +1,61 @@
+/* Warm timber, cream enamel and a softly lit tuning window. */
+:root[data-theme="radio"] {
+  --page: #f3ead9;
+  --case: #dabe97;
+  --edge: #a78259;
+  --surface: #f6ead2;
+  --ink: #493724;
+  --deep: #593d29;
+  --accent: #8a422b;
+  --active: #dfbc84;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+:root[data-theme="radio"] .instrument {
+  background-image: repeating-linear-gradient(92deg, transparent 0, #7855330a 3px, transparent 8px, #fff4 14px, transparent 21px);
+  border: 3px solid #9b7650;
+  border-radius: 20px;
+  box-shadow: 0 10px 0 #95704d, 0 20px 30px #49301d38, inset 0 2px 0 #fff8;
+}
+:root[data-theme="radio"] :is(.screen, .visualizer canvas) {
+  background: #483629;
+  border: 5px solid #b58b5b;
+  border-radius: 5px;
+  color: #ffedbd;
+  box-shadow: inset 0 0 18px #160d08aa;
+}
+:root[data-theme="radio"] :is(.screen-top, .screen-bottom) { color: #f3deb3; }
+:root[data-theme="radio"] :is(.pad, .controls select, .switches button, .sustain) { border-radius: 4px; }
+:root[data-theme="radio"] .pad { box-shadow: 0 5px 0 #a78259, inset 0 1px #fff9; }
+:root[data-theme="radio"] :is(header, .variation-row) { border-color: #bda888; }
+:root[data-theme="radio"] :is(.header-note, .brand-sub, footer) { color: #67523b; }
+
+/* Cool molded plastic, inset display and jewel-toned gamepad accents. */
+:root[data-theme="console"] {
+  --page: #e8e7e1;
+  --case: #c5c4be;
+  --edge: #898b90;
+  --surface: #e8e7e1;
+  --ink: #292b36;
+  --deep: #323745;
+  --accent: #554b86;
+  --active: #c4b5df;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+}
+:root[data-theme="console"] .instrument {
+  border: 2px solid #85868a;
+  border-radius: 10px 10px 30px 10px;
+  box-shadow: 0 10px 0 #85868a, 0 18px 28px #292b3633, inset 0 2px 0 #ffffff99;
+}
+:root[data-theme="console"] :is(.screen, .visualizer canvas) {
+  background: #273c35;
+  border: 6px solid #555961;
+  border-radius: 5px;
+  color: #e0f2cc;
+  box-shadow: inset 0 0 12px #111c16aa;
+}
+:root[data-theme="console"] :is(.screen-top, .screen-bottom) { color: #d5e9c2; }
+:root[data-theme="console"] :is(.pad, .controls select, .switches button, .sustain) { border-radius: 6px; }
+:root[data-theme="console"] .pad { box-shadow: 0 5px 0 #898b90, inset 0 1px #fff9; }
+:root[data-theme="console"] :is(.switches .selected, .sustain[aria-pressed="true"]) { background: #554b86; border-color: #554b86; color: white; }
+:root[data-theme="console"] :is(header, .variation-row) { border-color: #a5a5a3; }
+:root[data-theme="console"] :is(.header-note, .brand-sub, footer) { color: #555761; }

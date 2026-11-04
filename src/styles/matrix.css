@@ -1,0 +1,46 @@
+/* Green phosphor on black, with subtle CRT scanlines. */
+:root[data-theme="matrix"] {
+  --page: #020a04;
+  --case: #07150a;
+  --edge: #337a42;
+  --surface: #0a1d0e;
+  --ink: #c1f7ca;
+  --deep: #163d20;
+  --accent: #67ff8b;
+  --active: #1b542a;
+  color-scheme: dark;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+}
+:root[data-theme="matrix"] .instrument {
+  border: 1px solid #4bd36b;
+  border-radius: 3px;
+  background-image: repeating-linear-gradient(0deg, transparent 0 3px, #0003 3px 4px);
+  box-shadow: 0 0 18px #38dd5b33, inset 0 0 25px #0008;
+}
+:root[data-theme="matrix"] :is(.screen, .visualizer canvas) {
+  background: #020a04;
+  color: #67ff8b;
+  border: 1px solid #337a42;
+  border-radius: 0;
+  box-shadow: inset 0 0 16px #0b511b66;
+}
+:root[data-theme="matrix"] :is(.screen-top, .screen-bottom) { color: #9ce5a9; }
+:root[data-theme="matrix"] :is(.pad, .controls select, .switches button, .sustain, .theme-picker select, .tour-launch, .reset-configuration, .pitch-bend button) {
+  border-color: #337a42;
+  border-radius: 2px;
+}
+:root[data-theme="matrix"] .pad { box-shadow: 0 3px 0 #1e4d29; }
+:root[data-theme="matrix"] :is(.pads:not(.dragging) .pad:hover, .pad.active) {
+  color: #e1ffe7;
+  border-color: #67ff8b;
+  box-shadow: 0 0 10px #67ff8b66;
+}
+:root[data-theme="matrix"] :is(.switches .selected, .sustain[aria-pressed="true"], .joystick .joy-knob, .binding-dialog button) {
+  background: #164923;
+  color: #e1ffe7;
+  border-color: #67ff8b;
+}
+:root[data-theme="matrix"] :is(.volume input, .pitch-bend input) { accent-color: #67ff8b; }
+:root[data-theme="matrix"] .joystick-sustain[aria-pressed="true"] .toggle-track { background: #288344; }
+:root[data-theme="matrix"] :is(header, .variation-row) { border-color: #337a42; }
+:root[data-theme="matrix"] :is(.header-note, .brand-sub, footer) { color: #9ce5a9; }

@@ -18,7 +18,7 @@ const readBindings = () => {
   } catch { /* Use defaults if storage is unavailable or invalid. */ }
   return keys;
 };
-const themes = ['mint', 'salmon', 'orange', 'lavender', 'sky', 'neon'];
+const themes = ['mint', 'salmon', 'orange', 'lavender', 'sky', 'neon', 'radio', 'console', 'matrix'];
 const readTheme = () => {
   try { const saved = localStorage.getItem('chord-theme'); return saved !== null && themes.includes(saved) ? saved : 'mint'; }
   catch { return 'mint'; }
