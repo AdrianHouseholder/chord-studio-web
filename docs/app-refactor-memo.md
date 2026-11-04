@@ -1,6 +1,6 @@
 # Follow-up: separate instrument responsibilities
 
-Refactor `src/App.jsx` in a separate, behavior-preserving change. The current component coordinates the interface, Web Audio resources, keyboard and pointer inputs, sustain, and browser preferences. Keep the existing React, Vite, and Web Audio stack; introduce boundaries only where they make ownership clearer.
+Refactor `src/App.tsx` in a separate, behavior-preserving change. The current component coordinates the interface, Web Audio resources, keyboard and pointer inputs, sustain, and browser preferences. Keep the existing React, Vite, and Web Audio stack; introduce boundaries only where they make ownership clearer.
 
 ## Suggested approach
 
