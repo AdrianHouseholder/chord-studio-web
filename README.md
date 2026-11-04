@@ -24,11 +24,11 @@ Pick a major key and play any of seven chord pads. Layer chords, hold them with 
 
 ## Run locally
 
-You'll need Node.js and npm.
+You'll need [Bun](https://bun.sh/) and Node.js (for the test runner).
 
 ```sh
-npm install
-npm run dev
+bun install
+bun run dev
 ```
 
 Open the local URL printed by Vite. Close or finish the first-visit tour, then hold a pad or press **1–7**. Browser audio starts after a user gesture; check your device volume if you can't hear it.
@@ -38,8 +38,8 @@ Open the local URL printed by Vite. Close or finish the first-visit tour, then h
 Built with **React**, **Vite**, and the **Web Audio API**. To run the unit tests or create a production build:
 
 ```sh
-npm test
-npm run build
+bun run test
+bun run build
 ```
 
 - [Playing guide](docs/playing.md) — controls, sustain, bindings, joystick, and more.
