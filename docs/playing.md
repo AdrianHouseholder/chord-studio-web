@@ -4,9 +4,9 @@ Hold a chord pad or its displayed key to play; release it to stop. Hold multiple
 
 ## Tour and appearance
 
-The guided tour opens on the first visit. Its eight steps cover, in order: audio visualizer, sound controls, chord joystick, pitch bend, keyboard bindings, playing chords, chord sustain, and stopping/resetting. Use Next and Back, or dismiss with Close, Finish, or Escape. Dismissal is saved when localStorage is available; otherwise it can reappear on reload. **Start guided tour** in the header reopens it at the beginning. Tour progress is not saved, and opening it does not stop audio.
+The guided tour opens on the first visit. Its nine steps cover, in order: audio visualizer, sound controls, chord joystick, pitch bend, metronome, stopping/resetting, keyboard bindings, playing chords, and chord sustain. Use Next and Back, or dismiss with Close, Finish, or Escape. Dismissal is saved when localStorage is available; otherwise it can reappear on reload. **Start guided tour** in the header reopens it at the beginning. Tour progress is not saved, and opening it does not stop audio.
 
-Choose Mint, Salmon, Orange, Lavender, or Sky in the header. Mint is the default. The choice persists in localStorage when available; otherwise it lasts for the current session.
+Choose Mint, Salmon, Orange, Lavender, Sky, Neon, Radio, Console, or Matrix in the header. Mint is the default. The choice persists in localStorage when available; otherwise it lasts for the current session.
 
 ## Sound controls
 
@@ -49,6 +49,12 @@ The chosen chord color remains in effect, with these exceptions: Up and Up-right
 
 The vertical **Pitch bend** slider to the right of the joystick adjusts pitch continuously from −2 to +2 semitones; 0 is normal pitch. It affects held and sustained chords immediately and applies to future notes. Use the arrow keys when the slider is focused; chord bindings and joystick arrows do not interfere. **Reset pitch bend** returns the slider and sounding notes to 0 immediately. The setting stays where placed until changed, including after Turn Everything Off, and resets to 0 on reload.
 
+## Metronome
+
+Select **Start metronome** to hear a steady click; select **Stop metronome** to stop it. Set the tempo from 40 to 240 BPM and choose 1–12 beats per measure. Each light represents one beat, and the first beat sounds at a higher pitch. BPM counts clicks, not subdivisions.
+
+The defaults are 120 BPM and four beats per measure. Changing tempo or beats per measure while running starts a new measure. The settings are not saved across reloads.
+
 ## Chord history
 
 Select **Chord history** in the header to open or close the floating feed. Each new chord activation appears with its pad, chord name, and sound settings at the moment it was played. Changing settings on a sounding chord does not add an entry. History continues collecting while the panel is closed and is cleared when the page reloads.
@@ -57,8 +63,8 @@ Select **Chord history** in the header to open or close the floating feed. Each 
 
 The screen labels the actual intervals of the most recently activated sounding chord (including major sevenths and half-diminished sevenths), selected key, and color; it says **Ready to play** when no chord is active. Switch the visualizer between Waveform and Spectrum; it monitors the combined output without changing sound. Its animation pauses when the page is hidden. With reduced motion enabled, it draws on state or display changes rather than continuously.
 
-**Turn Everything Off** silences chords and reverb tails, releases inputs, disables both kinds of sustain, and centers the joystick. It leaves sound settings, theme, and bindings unchanged; play again immediately.
+**Turn Everything Off** stops the metronome, silences chords and reverb tails, releases inputs, disables both kinds of sustain, and centers the joystick. It leaves sound settings, theme, and bindings unchanged; play again immediately.
 
-**Reset Configuration** also stops sound and releases inputs, then restores the initial key, voice, volume, chord color, reverb, pitch, joystick, sustain, and keyboard bindings. Theme, tour dismissal, and unrelated browser storage are preserved. If storage is unavailable, default bindings apply for the current session.
+**Reset Configuration** also stops sound and releases inputs, then restores the initial key, voice, volume, chord color, reverb, pitch, joystick, sustain, keyboard bindings, metronome tempo, and beats per measure. Theme, tour dismissal, and unrelated browser storage are preserved. If storage is unavailable, default bindings apply for the current session.
 
 [Back to overview](../README.md) · [Architecture and development](architecture.md)

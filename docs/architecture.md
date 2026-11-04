@@ -1,6 +1,6 @@
 # Architecture and development
 
-Chord Studio is a client-only React application. `index.html` loads `src/main.tsx`, which renders `src/App.tsx`. The app coordinates the instrument and uses the guided tour and canvas visualizer in `src/components/`. `src/styles/instrument.css` defines presentation and themes. `src/music/chords.js` contains the pure chord calculation, tested by `src/music/chords.test.js`. There is no application server or backend in this project.
+Chord Studio is a client-only React application. `index.html` loads `src/main.tsx`, which renders `src/App.tsx`. The app coordinates the instrument and uses the guided tour, metronome, and canvas visualizer in `src/components/`. `src/styles/instrument.css` defines presentation and themes. `src/music/chords.js` contains the pure chord calculation, tested by `src/music/chords.test.js`. There is no application server or backend in this project.
 
 ## Notes and audio path
 
@@ -10,6 +10,10 @@ Audio is initialized lazily on play, using `AudioContext` (or `webkitAudioContex
 
 Key, voice, color, and direction changes recreate notes for active chords; volume adjusts their gains. Pitch bend retains each oscillator's unbent frequency and adjusts it by the equal-tempered semitone ratio without restarting the oscillator; a ref supplies the current bend to newly created or rebuilt voices. The visualizer continues for a timed reverb tail after the last chord stops. Turn Everything Off disconnects the old analyser/output graph, preventing its reverb tail from returning, and the next play creates a fresh graph.
 
+## Metronome
+
+`src/components/Metronome.tsx` creates a separate audio context after the user starts it. A timer triggers short oscillator clicks and updates the beat lights; the first beat uses a higher frequency. Tempo or beat-count changes restart the measure, and stopping or unmounting clears the timer. The metronome connects directly to the audio destination, independently of the chord reverb and visualizer.
+
 ## State, storage, and lifecycle
 
 React state drives controls and display; refs track the audio graph, active notes, held input sources, pointer captures, and current sustain/direction for event handlers. A chord can have several simultaneous input sources; releasing one does not stop it while another holds it. Each pad has its own sustain latch. Window blur clears held inputs, stops non-sustained chords, and centers the joystick. Unmount clears the tail timer and closes the audio context.
@@ -17,10 +21,10 @@ React state drives controls and display; refs track the audio graph, active note
 | localStorage key | Contents | Fallback |
 | --- | --- | --- |
 | `chord-bindings` | Seven unique lowercase key strings or null entries, JSON array | Default 1–7 for missing, invalid, or unavailable storage. |
-| `chord-theme` | One of the five theme identifiers | Mint for missing, invalid, or unavailable storage. |
+| `chord-theme` | One of the nine theme identifiers | Mint for missing, invalid, or unavailable storage. |
 | `chord-tour-dismissed` | `true` after closing or completing the tour | Tour opens when absent or storage is unavailable. |
 
-Storage writes are guarded: a failed write leaves the current selection usable for the session. Reset Configuration reuses the stop action and restores defaults, writing only the default chord bindings; theme, tour dismissal, and unrelated storage are untouched. Sound controls, sustain, joystick direction, and tour progress are not persisted. The visualizer pauses its animation on page hide and avoids continuous animation under reduced-motion preferences.
+Storage writes are guarded: a failed write leaves the current selection usable for the session. Reset Configuration reuses the stop action and restores defaults, writing only the default chord bindings; theme, tour dismissal, and unrelated storage are untouched. Sound controls, metronome settings, sustain, joystick direction, and tour progress are not persisted. The visualizer pauses its animation on page hide and avoids continuous animation under reduced-motion preferences.
 
 ## Development and verification
 
