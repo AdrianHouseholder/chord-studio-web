@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import { deepStrictEqual } from 'node:assert';
-import { chordNotes, chordName } from './music.js';
+import { chordNotes, chordName } from './chords.js';
 
 test('builds diatonic triads in C and transposes them', () => {
   deepStrictEqual(chordNotes(0, 0), [60, 64, 67]);
