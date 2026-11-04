@@ -1,22 +1,49 @@
 # Chord Studio
 
-Chord Studio is a browser-based, HiChord-inspired chord instrument. Pick a major key and hold one or more of seven chord pads to make sound; shape it with chord colors, a joystick, pitch bend, voices, and reverb. It runs locally with React, Vite, and the Web Audio API.
+**A little space to make something.**
 
-## Get started
+Chord Studio is a browser-based, HiChord-inspired chord instrument. Hold a pad, find a sound you like, and explore chords without leaving your browser.
 
-Requires Node.js and npm. From `hichord-browser/`:
+![Chord Studio desktop interface with chord pads, sound controls, a joystick, and a visualizer](docs/images/chord-studio-desktop.png)
+
+## Make some noise
+
+Pick a major key and play any of seven chord pads. Layer chords, hold them with sustain, and shape their sound as you play.
+
+- **Play your way:** use the pads or keys **1–7**, and customize your keyboard bindings.
+- **Find your sound:** choose a voice, chord color, and reverb; adjust the volume and pitch bend.
+- **Explore movement:** use the chord joystick to change intervals and add color to sounding chords.
+- **Make it yours:** choose a theme, switch between waveform and spectrum visualizers, or take the guided tour.
+
+<details>
+<summary>See the mobile layout</summary>
+
+![Chord Studio interface arranged for a narrow mobile screen](docs/images/chord-studio-mobile.png)
+
+</details>
+
+## Run locally
+
+You'll need Node.js and npm.
 
 ```sh
 npm install
 npm run dev
 ```
 
-Open the local URL printed by Vite. Close or finish the first-visit tour, then hold a pad or keys **1–7**. Browser audio starts after a user gesture; check your device volume if you cannot hear it.
+Open the local URL printed by Vite. Close or finish the first-visit tour, then hold a pad or press **1–7**. Browser audio starts after a user gesture; check your device volume if you can't hear it.
 
-## Explore
+## Under the hood
 
-- [Playing guide](docs/playing.md): controls, sustain, bindings, joystick, display, and stopping sound.
-- [Architecture and development](docs/architecture.md): music and audio implementation, state, storage, lifecycle, and testing.
-- [Milestone memo](docs/milestone.md): current scope, boundaries, and where to pick up next time.
+Built with **React**, **Vite**, and the **Web Audio API**. To run the unit tests or create a production build:
 
-This is a small software instrument, not a complete HiChord hardware emulation. It has no looping or drums. Browser audio and local storage availability depend on the browser and its settings.
+```sh
+npm test
+npm run build
+```
+
+- [Playing guide](docs/playing.md) — controls, sustain, bindings, joystick, and more.
+- [Architecture and development](docs/architecture.md) — audio, state, storage, lifecycle, and testing.
+- [Milestone memo](docs/milestone.md) — current scope and boundaries.
+
+> Chord Studio is a small software instrument, not a complete HiChord hardware emulation. It does not include looping or drums. Browser audio and local storage availability depend on the browser and its settings.
