@@ -1,0 +1,46 @@
+/* A restrained terminal-inspired palette with illuminated edges. */
+:root[data-theme="neon"] {
+  --page: #060b10;
+  --case: #0a141a;
+  --edge: #37efda;
+  --surface: #0d1b22;
+  --ink: #c2ebe6;
+  --deep: #102a30;
+  --accent: #37efda;
+  --active: #17433f;
+  color-scheme: dark;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+}
+:root[data-theme="neon"] .instrument {
+  border-color: var(--accent);
+  border-radius: 5px;
+  box-shadow: 0 0 12px #37efda40, inset 0 0 16px #37efda0d;
+}
+:root[data-theme="neon"] :is(.screen, .visualizer canvas) {
+  background: #050e12;
+  color: var(--accent);
+  border: 1px solid #246e69;
+  border-radius: 3px;
+  box-shadow: inset 0 0 12px #37efda12;
+}
+:root[data-theme="neon"] :is(.screen-top, .screen-bottom) { color: #8bd6cc; }
+:root[data-theme="neon"] :is(.pad, .controls select, .switches button, .sustain, .theme-picker select, .tour-launch, .reset-configuration, .pitch-bend button) {
+  border-radius: 3px;
+  border-color: #246e69;
+}
+:root[data-theme="neon"] .pad { box-shadow: none; }
+:root[data-theme="neon"] :is(.pads:not(.dragging) .pad:hover, .pad.active) {
+  color: #e5fffb;
+  border-color: var(--accent);
+  box-shadow: 0 0 10px #37efda66, inset 0 0 10px #37efda22;
+}
+:root[data-theme="neon"] :is(.switches .selected, .sustain[aria-pressed="true"], .joystick .joy-knob, .binding-dialog button) {
+  background: #17433f;
+  border-color: var(--accent);
+  color: #e5fffb;
+}
+:root[data-theme="neon"] :is(.volume input, .pitch-bend input) { accent-color: var(--accent); }
+:root[data-theme="neon"] .joystick-sustain[aria-pressed="true"] .toggle-track { background: #278e81; }
+:root[data-theme="neon"] :is(header, .control-grid) { border-color: #246e69; }
+:root[data-theme="neon"] :is(.header-note, .brand-sub, footer) { color: #8bbab4; }
+:root[data-theme="neon"] :is(.power span, .dot) { box-shadow: 0 0 8px var(--accent); }
