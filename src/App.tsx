@@ -3,25 +3,29 @@ import { chordNotes, chordName, noteNames } from './music/chords.js';
 import GuidedTour from './components/GuidedTour.jsx';
 import Visualizer from './components/Visualizer.jsx';
 
+type PlayingNote = { osc: OscillatorNode; gain: GainNode; frequency: number };
+type ReverbGraph = { input: GainNode; output: AnalyserNode; wet: { name: string; gain: GainNode }[] };
+type SoundSettings = { key: number; variation: string; voice: string; volume: number };
+
 const roman = ['I', 'ii', 'iii', 'IV', 'V', 'vi', 'vii°'];
 const keys = ['1', '2', '3', '4', '5', '6', '7'];
 const bindingStorage = 'chord-bindings';
 const readBindings = () => {
   try {
-    const saved = JSON.parse(localStorage.getItem(bindingStorage));
+    const saved = JSON.parse(localStorage.getItem(bindingStorage) as string);
     if (Array.isArray(saved) && saved.length === keys.length && saved.every(k => k === null || (typeof k === 'string' && k.length > 0 && k === k.toLowerCase())) && new Set(saved.filter(k => k !== null)).size === saved.filter(k => k !== null).length) return saved;
   } catch { /* Use defaults if storage is unavailable or invalid. */ }
   return keys;
 };
 const themes = ['mint', 'salmon', 'orange', 'lavender', 'sky'];
 const readTheme = () => {
-  try { const saved = localStorage.getItem('chord-theme'); return themes.includes(saved) ? saved : 'mint'; }
+  try { const saved = localStorage.getItem('chord-theme'); return saved !== null && themes.includes(saved) ? saved : 'mint'; }
   catch { return 'mint'; }
 };
-const voices = { Warm: 'triangle', Soft: 'sine', Bright: 'sawtooth', Pulse: 'square', Organ: [0, 1, 0.5, 0.25], Bell: [0, 1, 0, 0.4, 0, 0.2] };
+const voices: Record<string, OscillatorType | number[]> = { Warm: 'triangle', Soft: 'sine', Bright: 'sawtooth', Pulse: 'square', Organ: [0, 1, 0.5, 0.25], Bell: [0, 1, 0, 0.4, 0, 0.2] };
 const reverbs = { room: 0.7, hall: 1.8, dreamy: 3 };
 
-function createReverbGraph(context, selected) {
+function createReverbGraph(context: AudioContext, selected: string) {
   const input = context.createGain();
   const output = context.createAnalyser();
   input.connect(output); // The dry signal remains at unity, including when reverb is off.
@@ -54,14 +58,14 @@ export default function App() {
     try { return localStorage.getItem('chord-tour-dismissed') !== 'true'; }
     catch { return true; }
   });
-  const tourLaunch = useRef(null);
+  const tourLaunch = useRef<HTMLButtonElement>(null);
   const closeTour = () => {
     try { localStorage.setItem('chord-tour-dismissed', 'true'); } catch { /* Retry on a later visit. */ }
     setTourOpen(false);
     tourLaunch.current?.focus();
   };
   const [theme, setTheme] = useState(readTheme);
-  const changeTheme = value => {
+  const changeTheme = (value: string) => {
     setTheme(value);
     try { localStorage.setItem('chord-theme', value); } catch { /* Keep the selection for this session. */ }
   };
@@ -75,39 +79,39 @@ export default function App() {
   const [reverb, setReverb] = useState('off');
   const reverbRef = useRef('off');
   const [tail, setTail] = useState(false);
-  const tailTimer = useRef(null);
-  const [active, setActive] = useState([]);
+  const tailTimer = useRef<number | undefined>(undefined);
+  const [active, setActive] = useState<number[]>([]);
   const [sustain, setSustain] = useState(() => Array(7).fill(false));
   const sustainRef = useRef(Array(7).fill(false));
-  const [bindings, setBindings] = useState(readBindings);
-  const [bindingDegree, setBindingDegree] = useState(null);
+  const [bindings, setBindings] = useState<(string | null)[]>(readBindings);
+  const [bindingDegree, setBindingDegree] = useState<number | null>(null);
   const [joystickSustain, setJoystickSustain] = useState(false);
-  const joystickPointer = useRef(null);
+  const joystickPointer = useRef<number | null>(null);
   const [direction, setDirection] = useState('center');
   const directionRef = useRef('center');
-  const activeRef = useRef(new Map());
-  const arrowHeld = useRef([]);
-  const audio = useRef(null);
-  const analyser = useRef(null);
-  const reverbGraph = useRef(null);
-  const changeReverb = value => {
+  const activeRef = useRef(new Map<number, boolean>());
+  const arrowHeld = useRef<string[]>([]);
+  const audio = useRef<AudioContext | null>(null);
+  const analyser = useRef<AnalyserNode | null>(null);
+  const reverbGraph = useRef<ReverbGraph | null>(null);
+  const changeReverb = (value: string) => {
     reverbRef.current = value;
     setReverb(value);
     if (!reverbGraph.current) return;
-    const now = audio.current.currentTime;
+    const now = audio.current!.currentTime;
     for (const { name, gain } of reverbGraph.current.wet) {
       gain.gain.cancelScheduledValues(now);
       gain.gain.setTargetAtTime(name === value ? 0.15 : 0, now, 0.035);
     }
   };
-  const playing = useRef(new Map());
-  const held = useRef(new Map());
-  const padPointers = useRef(new Map());
+  const playing = useRef(new Map<number, PlayingNote[]>());
+  const held = useRef(new Map<number, Set<string>>());
+  const padPointers = useRef(new Map<number, number | null>());
   const [draggingPads, setDraggingPads] = useState(false);
-  const changeVolume = value => {
+  const changeVolume = (value: number) => {
     setVolume(value);
     if (!audio.current) return;
-    const now = audio.current.currentTime;
+    const now = audio.current!.currentTime;
     for (const notes of playing.current.values()) {
       for (const { gain } of notes) {
         gain.gain.cancelScheduledValues(now);
@@ -115,17 +119,17 @@ export default function App() {
       }
     }
   };
-  const changePitchBend = value => {
+  const changePitchBend = (value: number) => {
     pitchBendRef.current = value;
     setPitchBend(value);
     for (const notes of playing.current.values()) {
       for (const { osc, frequency } of notes) osc.frequency.value = frequency * 2 ** (value / 12);
     }
   };
-  const stop = degree => {
+  const stop = (degree: number) => {
     const notes = playing.current.get(degree);
     if (!notes) return;
-    const now = audio.current.currentTime;
+    const now = audio.current!.currentTime;
     notes.forEach(({ osc, gain }) => {
       gain.gain.cancelScheduledValues(now);
       gain.gain.setTargetAtTime(0, now, 0.045);
@@ -140,16 +144,16 @@ export default function App() {
       tailTimer.current = setTimeout(() => setTail(false), 3300);
     }
   };
-  const play = (degree, color = directionRef.current, settings = { key, variation, voice, volume }) => {
+  const play = (degree: number, color = directionRef.current, settings: SoundSettings = { key, variation, voice, volume }) => {
     stop(degree);
-    const context = audio.current ||= new (window.AudioContext || window.webkitAudioContext)();
+    const context = audio.current ||= new (window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext!)();
     context.resume();
     clearTimeout(tailTimer.current);
     setTail(false);
     reverbGraph.current ||= createReverbGraph(context, reverbRef.current);
     analyser.current = reverbGraph.current.output;
     const now = context.currentTime;
-    const notes = [];
+    const notes: PlayingNote[] = [];
     chordNotes(settings.key, degree, settings.variation, color).forEach(note => {
       const osc = context.createOscillator();
       const gain = context.createGain();
@@ -161,7 +165,7 @@ export default function App() {
       gain.gain.setValueAtTime(0, now);
       gain.gain.linearRampToValueAtTime(settings.volume * 0.12, now + 0.025);
       osc.connect(gain);
-      gain.connect(reverbGraph.current.input);
+      gain.connect(reverbGraph.current!.input);
       osc.start(now);
       notes.push({ osc, gain, frequency });
     });
@@ -169,7 +173,7 @@ export default function App() {
     activeRef.current.set(degree, true);
     setActive([...activeRef.current.keys()]);
   };
-  const updateSound = changes => {
+  const updateSound = (changes: Partial<SoundSettings>) => {
     const settings = { key, variation, voice, volume, ...changes };
     [...activeRef.current.keys()].forEach(degree => play(degree, directionRef.current, settings));
   };
@@ -196,16 +200,16 @@ export default function App() {
     setBindings(keys);
     try { localStorage.setItem(bindingStorage, JSON.stringify(keys)); } catch { /* Defaults remain active for this session. */ }
   };
-  const press = (degree, source) => {
+  const press = (degree: number, source: string) => {
     const latched = !held.current.has(degree) && sustainRef.current[degree] && playing.current.has(degree);
     if (!held.current.has(degree)) held.current.set(degree, new Set());
-    const sources = held.current.get(degree);
+    const sources = held.current.get(degree)!;
     if (sources.has(source)) return;
     sources.add(source);
     if (latched) stop(degree);
     else if (!playing.current.has(degree) && sources.size === 1) play(degree);
   };
-  const release = (degree, source) => {
+  const release = (degree: number, source: string) => {
     const sources = held.current.get(degree);
     if (!sources?.delete(source)) return;
     if (!sources.size) {
@@ -213,10 +217,10 @@ export default function App() {
       if (!sustainRef.current[degree]) stop(degree);
     }
   };
-  const movePadPointer = event => {
+  const movePadPointer = (event: React.PointerEvent<HTMLButtonElement>) => {
     if (!padPointers.current.has(event.pointerId)) return;
-    const previous = padPointers.current.get(event.pointerId);
-    const pad = document.elementFromPoint(event.clientX, event.clientY)?.closest('.pad[data-degree]');
+    const previous = padPointers.current.get(event.pointerId)!;
+    const pad = document.elementFromPoint(event.clientX, event.clientY)?.closest<HTMLElement>('.pad[data-degree]');
     const next = pad ? Number(pad.dataset.degree) : null;
     if (previous === next) return;
     const source = `pointer:${event.pointerId}`;
@@ -224,33 +228,33 @@ export default function App() {
     padPointers.current.set(event.pointerId, next);
     if (next !== null) press(next, source);
   };
-  const endPadPointer = event => {
+  const endPadPointer = (event: React.PointerEvent<HTMLButtonElement>) => {
     if (!padPointers.current.has(event.pointerId)) return;
-    const degree = padPointers.current.get(event.pointerId);
+    const degree = padPointers.current.get(event.pointerId)!;
     padPointers.current.delete(event.pointerId);
     setDraggingPads(padPointers.current.size > 0);
     if (degree !== null) release(degree, `pointer:${event.pointerId}`);
   };
-  const toggleSustain = degree => {
+  const toggleSustain = (degree: number) => {
     const next = [...sustainRef.current];
     next[degree] = !next[degree];
     sustainRef.current = next;
     setSustain(next);
     if (!next[degree] && !held.current.has(degree)) stop(degree);
   };
-  const changeDirection = next => {
+  const changeDirection = (next: string) => {
     if (directionRef.current === next) return;
     directionRef.current = next;
     setDirection(next);
     [...activeRef.current.keys()].forEach(degree => play(degree, next));
   };
   const arrowDirection = () => {
-    const last = axis => [...arrowHeld.current].reverse().find(key => axis.includes(key));
-    const vertical = ({ arrowup: 'up', arrowdown: 'down' })[last(['arrowup', 'arrowdown'])];
-    const horizontal = ({ arrowleft: 'left', arrowright: 'right' })[last(['arrowleft', 'arrowright'])];
+    const last = (axis: string[]) => [...arrowHeld.current].reverse().find(key => axis.includes(key));
+    const vertical = ({ arrowup: 'up', arrowdown: 'down' } as Record<string, string>)[last(['arrowup', 'arrowdown'])!];
+    const horizontal = ({ arrowleft: 'left', arrowright: 'right' } as Record<string, string>)[last(['arrowleft', 'arrowright'])!];
     return [vertical, horizontal].filter(Boolean).join('-') || 'center';
   };
-  const pointerDirection = event => {
+  const pointerDirection = (event: React.PointerEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
     const x = (event.clientX - rect.left) / rect.width - 0.5;
     const y = (event.clientY - rect.top) / rect.height - 0.5;
@@ -260,8 +264,8 @@ export default function App() {
     changeDirection(sectors[(Math.round(angle / (Math.PI / 4)) + 8) % 8]);
   };
   useEffect(() => {
-    const down = event => {
-      if (tourOpen && (event.key === 'Escape' || event.target.closest?.('.tour-panel'))) return;
+    const down = (event: KeyboardEvent) => {
+      if (tourOpen && (event.key === 'Escape' || (event.target as Element).closest?.('.tour-panel'))) return;
       if (bindingDegree !== null) {
         event.preventDefault();
         if (event.key === 'Escape') { setBindingDegree(null); return; }
@@ -273,14 +277,14 @@ export default function App() {
         setBindingDegree(null);
         return;
       }
-      if (event.repeat || event.ctrlKey || event.metaKey || event.altKey || event.target.matches('input, select') || (event.target.matches('button') && (event.key === ' ' || event.key === 'Enter'))) return;
+      if (event.repeat || event.ctrlKey || event.metaKey || event.altKey || (event.target as Element).matches('input, select') || ((event.target as Element).matches('button') && (event.key === ' ' || event.key === 'Enter'))) return;
       const pressed = event.key.toLowerCase();
       const degree = bindings.indexOf(pressed);
       if (degree !== -1) { event.preventDefault(); press(degree, `key:${pressed}`); return; }
-      const arrows = { arrowup: 'up', arrowright: 'right', arrowleft: 'left', arrowdown: 'down' };
+      const arrows: Record<string, string> = { arrowup: 'up', arrowright: 'right', arrowleft: 'left', arrowdown: 'down' };
       if (arrows[pressed]) { event.preventDefault(); arrowHeld.current.push(pressed); changeDirection(arrowDirection()); }
     };
-    const up = event => {
+    const up = (event: KeyboardEvent) => {
       const pressed = event.key.toLowerCase();
       for (const degree of held.current.keys()) release(degree, `key:${pressed}`);
       if (arrowHeld.current.includes(pressed)) {
