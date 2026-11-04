@@ -49,6 +49,10 @@ The chosen chord color remains in effect, with these exceptions: Up and Up-right
 
 The vertical **Pitch bend** slider to the right of the joystick adjusts pitch continuously from −2 to +2 semitones; 0 is normal pitch. It affects held and sustained chords immediately and applies to future notes. Use the arrow keys when the slider is focused; chord bindings and joystick arrows do not interfere. **Reset pitch bend** returns the slider and sounding notes to 0 immediately. The setting stays where placed until changed, including after Turn Everything Off, and resets to 0 on reload.
 
+## Chord history
+
+Select **Chord history** in the header to open or close the floating feed. Each new chord activation appears with its pad, chord name, and sound settings at the moment it was played. Changing settings on a sounding chord does not add an entry. History continues collecting while the panel is closed and is cleared when the page reloads.
+
 ## Display and stop
 
 The screen labels the actual intervals of the most recently activated sounding chord (including major sevenths and half-diminished sevenths), selected key, and color; it says **Ready to play** when no chord is active. Switch the visualizer between Waveform and Spectrum; it monitors the combined output without changing sound. Its animation pauses when the page is hidden. With reduced motion enabled, it draws on state or display changes rather than continuously.
