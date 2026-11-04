@@ -28,7 +28,7 @@ test('first visit and interrupted reload show the tour; closing persists and all
 test('finishing persists and manual replay remains available', async ({ page }) => {
   await page.goto('/');
   const tour = page.getByRole('dialog', { name: 'Guided tour' });
-  for (let i = 0; i < 7; i++) await tour.getByRole('button', { name: 'Next' }).click();
+  for (let i = 0; i < 8; i++) await tour.getByRole('button', { name: 'Next' }).click();
   expect(await page.evaluate(key => localStorage.getItem(key), flag)).toBeNull();
   await tour.getByRole('button', { name: 'Finish' }).click();
   await expect(page.getByRole('button', { name: 'Start guided tour' })).toBeFocused();

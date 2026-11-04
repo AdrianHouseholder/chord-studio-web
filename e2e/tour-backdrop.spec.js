@@ -1,6 +1,6 @@
 import { test, expect } from './fixture.js';
 
-const anchors = ['.visualizer', '.controls', '.joystick-control', '.pitch-bend', '.chord-header', '.pads', '.pad-group .sustain', '.reset-actions'];
+const anchors = ['.visualizer', '.controls', '.joystick-control', '.pitch-bend', '.metronome', '.reset-actions', '.chord-header', '.pads', '.pad-group .sustain'];
 
 async function checkSpotlight(page, anchor) {
   await expect.poll(async () => page.evaluate(selector => {
@@ -34,7 +34,7 @@ test('backdrop follows every step, blocks outside clicks, and dismisses accessib
     if (i < anchors.length - 1) await tour.getByRole('button', { name: 'Next' }).click();
   }
   await tour.getByRole('button', { name: 'Back' }).click();
-  await checkSpotlight(page, anchors[6]);
+  await checkSpotlight(page, anchors[7]);
   await page.keyboard.press('Escape');
   await expect(page.locator('.tour-backdrop')).toHaveCount(0);
   await expect(launch).toBeFocused();

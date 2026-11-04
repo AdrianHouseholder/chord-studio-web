@@ -13,6 +13,7 @@ Pick a major key and play any of seven chord pads. Layer chords, hold them with 
 - **Play your way:** use the pads or keys **1–7**, and customize your keyboard bindings.
 - **Find your sound:** choose a voice, chord color, and reverb; adjust the volume and pitch bend.
 - **Explore movement:** use the chord joystick to change intervals and add color to sounding chords.
+- **Keep time:** start the metronome, adjust its tempo from 40 to 240 BPM, and choose the number of beats per measure. Each click and light represents one beat; BPM counts clicks. Turn Everything Off stops it; Reset Configuration restores 120 BPM and four beats per measure.
 - **Make it yours:** choose a theme, switch between waveform and spectrum visualizers, or take the guided tour.
 
 <details>
