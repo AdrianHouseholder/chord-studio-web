@@ -24,6 +24,18 @@ test('neon visualizer highlights only the selected mode', async ({ page }) => {
   await expect(spectrum).not.toHaveCSS('border-color', 'rgb(55, 239, 218)');
 });
 
+test('neon volume matches the pitch bend accent while remaining horizontal', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Theme').selectOption('neon');
+  const volume = page.locator('.volume input');
+  const pitchBend = page.locator('.pitch-bend input');
+
+  await expect(volume).toHaveCSS('accent-color', 'rgb(55, 239, 218)');
+  await expect(pitchBend).toHaveCSS('accent-color', 'rgb(55, 239, 218)');
+  await expect(volume).toHaveCSS('writing-mode', 'horizontal-tb');
+  await expect(pitchBend).toHaveCSS('writing-mode', 'vertical-lr');
+});
+
 test('neon theme has a dark console palette, persists, and preserves playback', async ({ page }) => {
   await page.goto('/');
   await page.getByLabel('Theme').selectOption('neon');
