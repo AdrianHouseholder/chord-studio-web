@@ -36,6 +36,19 @@ test('neon volume matches the pitch bend accent while remaining horizontal', asy
   await expect(pitchBend).toHaveCSS('writing-mode', 'vertical-lr');
 });
 
+test('neon joystick knob has depth and still follows joystick input', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Theme').selectOption('neon');
+  const knob = page.locator('.joystick .joy-knob');
+  await expect(knob).toHaveCSS('background-image', /linear-gradient/);
+  await expect(knob).not.toHaveCSS('box-shadow', 'none');
+  await expect(knob).toHaveClass(/center/);
+  await page.keyboard.down('ArrowRight');
+  await expect(knob).toHaveClass(/right/);
+  await page.keyboard.up('ArrowRight');
+  await expect(knob).toHaveClass(/center/);
+});
+
 test('neon theme has a dark console palette, persists, and preserves playback', async ({ page }) => {
   await page.goto('/');
   await page.getByLabel('Theme').selectOption('neon');

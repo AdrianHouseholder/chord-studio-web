@@ -39,6 +39,10 @@
   border-color: var(--accent);
   color: #e5fffb;
 }
+:root[data-theme="neon"] .control-grid .joystick > .joy-knob {
+  background: linear-gradient(145deg, #327c75, #1b4948);
+  box-shadow: 0 3px 5px #0008;
+}
 :root[data-theme="neon"] .visualizer .switches button { border-color: #246e69; }
 :root[data-theme="neon"] .visualizer .switches .selected { border-color: var(--accent); }
 :root[data-theme="neon"] .controls .volume input,
