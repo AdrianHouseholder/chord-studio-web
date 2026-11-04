@@ -11,11 +11,11 @@ const tourSteps = [
   { title: 'Stopping and resetting', anchor: '.reset-actions', text: 'Turn Everything Off silences chords and reverb tails, releases inputs, disables sustains and centers the joystick while preserving sound settings and bindings. Reset Configuration also restores instrument defaults and keyboard bindings; your theme and tour dismissal stay unchanged.' },
 ];
 
-export default function GuidedTour({ onClose }) {
+export default function GuidedTour({ onClose }: { onClose: () => void }) {
   const [step, setStep] = useState(0);
   const [position, setPosition] = useState({ left: 8, top: 8 });
   const [spotlight, setSpotlight] = useState({ left: 0, top: 0, right: 0, bottom: 0 });
-  const panel = useRef(null);
+  const panel = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     const target = document.querySelector(tourSteps[step].anchor);
     target?.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
@@ -28,8 +28,8 @@ export default function GuidedTour({ onClose }) {
     const place = () => {
       if (!target || !panel.current) return;
       const rect = target.getBoundingClientRect(), box = panel.current.getBoundingClientRect();
-      const clampX = value => Math.max(0, Math.min(window.innerWidth, value));
-      const clampY = value => Math.max(0, Math.min(window.innerHeight, value));
+      const clampX = (value: number) => Math.max(0, Math.min(window.innerWidth, value));
+      const clampY = (value: number) => Math.max(0, Math.min(window.innerHeight, value));
       setSpotlight({ left: clampX(rect.left), top: clampY(rect.top), right: clampX(rect.right), bottom: clampY(rect.bottom) });
       const left = Math.max(8, Math.min(rect.left, window.innerWidth - box.width - 8));
       const below = rect.bottom + 10, above = rect.top - box.height - 10;
@@ -43,9 +43,9 @@ export default function GuidedTour({ onClose }) {
     if (panel.current) observer.observe(panel.current);
     return () => { observer.disconnect(); window.removeEventListener('scroll', place, true); window.removeEventListener('resize', place); };
   }, [step]);
-  useEffect(() => { panel.current?.querySelector('[data-initial]')?.focus(); }, []);
+  useEffect(() => { panel.current?.querySelector<HTMLElement>('[data-initial]')?.focus(); }, []);
   useEffect(() => {
-    const escape = event => { if (event.key === 'Escape') { event.preventDefault(); onClose(); } };
+    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') { event.preventDefault(); onClose(); } };
     window.addEventListener('keydown', escape);
     return () => window.removeEventListener('keydown', escape);
   }, [onClose]);

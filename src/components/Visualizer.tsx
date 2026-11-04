@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-export default function Visualizer({ analyser, active, theme, children }) {
-  const canvas = useRef(null);
+export default function Visualizer({ analyser, active, theme, children }: { analyser: React.RefObject<AnalyserNode | null>; active: boolean; theme: string; children: React.ReactNode }) {
+  const canvas = useRef<HTMLCanvasElement>(null);
   const [mode, setMode] = useState('waveform');
   useEffect(() => {
-    const element = canvas.current;
-    const ctx = element.getContext('2d');
+    const element = canvas.current!;
+    const ctx = element.getContext('2d')!;
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let frame;
+    let frame: number;
     const draw = () => {
       const width = element.clientWidth, height = element.clientHeight;
       const scale = window.devicePixelRatio || 1;

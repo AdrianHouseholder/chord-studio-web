@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { chordNotes, chordName, noteNames } from './music/chords.js';
-import GuidedTour from './components/GuidedTour.jsx';
-import Visualizer from './components/Visualizer.jsx';
+import GuidedTour from './components/GuidedTour';
+import Visualizer from './components/Visualizer';
 
 type PlayingNote = { osc: OscillatorNode; gain: GainNode; frequency: number };
 type ReverbGraph = { input: GainNode; output: AnalyserNode; wet: { name: string; gain: GainNode }[] };
