@@ -49,6 +49,17 @@ test('neon joystick knob has depth and still follows joystick input', async ({ p
   await expect(knob).toHaveClass(/center/);
 });
 
+test('neon visualizer border matches the now playing display in both modes', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Theme').selectOption('neon');
+  const display = page.locator('.screen');
+  const visualizer = page.locator('.visualizer canvas');
+  await expect(display).toHaveCSS('border-color', 'rgb(55, 239, 218)');
+  await expect(visualizer).toHaveCSS('border-color', 'rgb(55, 239, 218)');
+  await page.getByRole('button', { name: 'Spectrum' }).click();
+  await expect(visualizer).toHaveCSS('border-color', 'rgb(55, 239, 218)');
+});
+
 test('neon theme has a dark console palette, persists, and preserves playback', async ({ page }) => {
   await page.goto('/');
   await page.getByLabel('Theme').selectOption('neon');
