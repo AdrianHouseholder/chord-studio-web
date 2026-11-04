@@ -1,6 +1,6 @@
 import { test, expect } from './fixture.js';
 
-const titles = ['Audio visualizer', 'Sound controls', 'Chord joystick', 'Pitch bend', 'Keyboard bindings', 'Play chords', 'Sustain chords', 'Stopping and resetting'];
+const titles = ['Audio visualizer', 'Sound controls', 'Chord joystick', 'Pitch bend', 'Metronome', 'Stopping and resetting', 'Keyboard bindings', 'Play chords', 'Sustain chords'];
 
 test('tour is optional, navigable and restores focus on dismissal', async ({ page }) => {
   await page.goto('/');
@@ -16,7 +16,7 @@ test('tour is optional, navigable and restores focus on dismissal', async ({ pag
     await expect(tour.getByRole('heading')).toHaveText(title);
   }
   await tour.getByRole('button', { name: 'Back' }).click();
-  await expect(tour.getByRole('heading')).toHaveText('Sustain chords');
+  await expect(tour.getByRole('heading')).toHaveText('Play chords');
   await page.keyboard.press('Escape');
   await expect(tour).toHaveCount(0);
   await expect(launch).toBeFocused();
@@ -36,13 +36,19 @@ for (const width of [320, 1280]) test(`tour describes pitch and both reset actio
   for (let i = 0; i < 3; i++) await tour.getByRole('button', { name: 'Next' }).click();
   await expect(tour).toContainText('Reset pitch bend');
   await expect(page.locator('.tour-spotlight')).toBeVisible();
-  for (let i = 0; i < 4; i++) await tour.getByRole('button', { name: 'Next' }).click();
+  await tour.getByRole('button', { name: 'Next' }).click();
+  await expect(tour.getByRole('heading')).toHaveText('Metronome');
+  await expect(tour).toContainText('beats per measure');
+  await expect(tour).toContainText('first beat');
+  await expect(tour).toContainText('lights');
+  await tour.getByRole('button', { name: 'Next' }).click();
   await expect(tour).toContainText('Turn Everything Off');
   await expect(tour).toContainText('Reset Configuration');
   await expect(tour).toContainText('theme and tour dismissal');
+  await expect(tour).toContainText('metronome');
   await tour.getByRole('button', { name: 'Back' }).click();
-  await expect(tour.getByRole('heading')).toHaveText('Sustain chords');
-  await tour.getByRole('button', { name: 'Next' }).click();
+  await expect(tour.getByRole('heading')).toHaveText('Metronome');
+  for (let i = 0; i < 4; i++) await tour.getByRole('button', { name: 'Next' }).click();
   await tour.getByRole('button', { name: 'Finish' }).click();
   await expect(tour).toHaveCount(0);
 });

@@ -42,6 +42,6 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 568 
     await page.keyboard.press('Enter');
     await expect(tour.getByRole('heading')).toHaveText('Pitch bend');
     await page.keyboard.press('Enter');
-    await expect(tour.getByRole('heading')).toHaveText('Keyboard bindings');
+    await expect(tour.getByRole('heading')).toHaveText('Metronome');
   });
 }

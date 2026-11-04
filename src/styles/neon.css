@@ -44,3 +44,5 @@
 :root[data-theme="neon"] :is(header, .control-grid) { border-color: #246e69; }
 :root[data-theme="neon"] :is(.header-note, .brand-sub, footer) { color: #8bbab4; }
 :root[data-theme="neon"] :is(.power span, .dot) { box-shadow: 0 0 8px var(--accent); }
+
+:root[data-theme="neon"] .metronome-beat span:not(.active){background:var(--active)}

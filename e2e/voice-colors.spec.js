@@ -38,7 +38,7 @@ test('tour follows the layout from visualizer to reset', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Start guided tour' }).click();
   const tour = page.getByRole('dialog', { name: 'Guided tour' });
-  for (const [index, title] of ['Audio visualizer', 'Sound controls', 'Chord joystick', 'Pitch bend', 'Keyboard bindings', 'Play chords', 'Sustain chords', 'Stopping and resetting'].entries()) {
+  for (const [index, title] of ['Audio visualizer', 'Sound controls', 'Chord joystick', 'Pitch bend', 'Metronome', 'Stopping and resetting', 'Keyboard bindings', 'Play chords', 'Sustain chords'].entries()) {
     if (index) await tour.getByRole('button', { name: 'Next' }).click();
     await expect(tour.getByRole('heading')).toHaveText(title);
   }
