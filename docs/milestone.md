@@ -12,7 +12,7 @@ Chord Studio is a playable browser instrument and a good stopping point for this
 ## Pick up next time
 
 1. Follow the [setup](../README.md#get-started) and play a few chords after closing the tour.
-2. Run `npm test` from `hichord-browser/`; see [development and verification](architecture.md#development-and-verification) for browser tests and build commands.
+2. Run `bun run test` from `hichord-browser/`; see [development and verification](architecture.md#development-and-verification) for browser tests and build commands.
 3. Use the [playing guide](playing.md) for control details and [architecture](architecture.md) for audio, storage, and lifecycle behavior. Choose future work from current needs; no next feature is prescribed here.
 
 ## Boundaries to remember

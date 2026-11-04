@@ -27,18 +27,18 @@ Storage writes are guarded: a failed write leaves the current selection usable f
 Run these from `hichord-browser/` after installing dependencies as described in the [overview](../README.md):
 
 ```sh
-npm run dev    # Vite development server on 127.0.0.1
-npm test       # Node's built-in test runner; music calculations
-npm run typecheck # Type-check the TypeScript source
-npm run build  # Vite production build in dist/
+bun run dev    # Vite development server on 127.0.0.1
+bun run test       # Node's built-in test runner; music calculations
+bun run typecheck # Type-check the TypeScript source
+bun run build  # Vite production build in dist/
 ```
 
 Browser tests use Playwright and Chromium. Install the browser once and run the suite from a Bash-compatible shell:
 
 ```sh
 export PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright-browsers"
-npx playwright install chromium
-npx playwright test
+bunx --no-install playwright install chromium
+bunx --no-install playwright test
 ```
 
 In PowerShell, use `$env:PLAYWRIGHT_BROWSERS_PATH = "$PWD/.playwright-browsers"` instead of the `export` line. Playwright starts the Vite server at `127.0.0.1:5173`, or reuses an existing server there. Browser tests live in `e2e/`; their shared fixture marks the tour dismissed for returning-visit tests, while onboarding has dedicated coverage. Playwright output and installed browsers are ignored by Git.
