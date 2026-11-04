@@ -7,6 +7,11 @@ for (const width of [1440, 320]) {
     await page.evaluate(() => document.fonts.ready);
     const screen = page.locator('.screen');
     const canvas = page.locator('.visualizer canvas');
+    await expect(screen).toHaveCSS('display', 'flex');
+    await expect(screen).toHaveCSS('flex-direction', 'column');
+    await expect(screen).toHaveCSS('justify-content', 'space-between');
+    await expect(screen).toHaveCSS('padding-top', '10px');
+    await expect(screen).toHaveCSS('padding-bottom', '10px');
     const screenBox = await screen.boundingBox();
     const canvasBox = await canvas.boundingBox();
     console.log(`baseline ${width}px: screen=${screenBox.height}px canvas=${canvasBox.height}px`);
