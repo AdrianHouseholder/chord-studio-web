@@ -50,7 +50,7 @@ for (const reducedMotion of ['no-preference', 'reduce']) {
     await changeAndCheck('salmon', 'stroke');
     await changeAndCheck('mint', 'stroke');
     await page.keyboard.down('1');
-    await expect(page.getByRole('button', { name: 'Play chord I', exact: true })).toHaveClass(/active/);
+    await expect(page.getByRole('button', { name: 'PLAY CHORD I', exact: true })).toHaveClass(/active/);
     await changeAndCheck('sky', 'stroke');
     await page.getByRole('button', { name: 'Spectrum' }).click();
     await expect.poll(() => page.evaluate(() => window.draws.at(-1)?.[0])).toBe('bar');

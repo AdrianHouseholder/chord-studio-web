@@ -20,8 +20,8 @@ test('volume immediately updates sustained and layered notes without restarting 
     };
   });
   await page.goto('/');
-  await page.getByRole('button', { name: 'Sustain chord I', exact: true }).click();
-  await page.getByRole('button', { name: 'Sustain chord ii', exact: true }).click();
+  await page.getByRole('button', { name: 'SUSTAIN CHORD I', exact: true }).click();
+  await page.getByRole('button', { name: 'SUSTAIN CHORD ii', exact: true }).click();
   await page.keyboard.press('1');
   await page.keyboard.press('2');
   const state = () => page.evaluate(() => ({ count: window.notes.length, sounding: window.notes.filter(note => !note.stopped).map(note => note.gain.value) }));
@@ -31,8 +31,8 @@ test('volume immediately updates sustained and layered notes without restarting 
   await expect.poll(state).toEqual({ count: 6, sounding: Array(6).fill(0.2 * 0.12) });
   await volume.fill('0');
   await expect.poll(state).toEqual({ count: 6, sounding: Array(6).fill(0) });
-  await page.getByRole('button', { name: 'Sustain chord I', exact: true }).click();
-  await page.getByRole('button', { name: 'Sustain chord ii', exact: true }).click();
+  await page.getByRole('button', { name: 'SUSTAIN CHORD I', exact: true }).click();
+  await page.getByRole('button', { name: 'SUSTAIN CHORD ii', exact: true }).click();
   expect(await state()).toEqual({ count: 6, sounding: [] });
   await volume.fill('0.3');
   await volume.blur();

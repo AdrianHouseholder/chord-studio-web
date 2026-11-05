@@ -18,7 +18,7 @@ test('layers keyboard chords, sustains independently, and colors every sounding 
   });
   const sounding = () => page.evaluate(() => window.notes.filter(n => !n.stopped).map(n => n.note).sort((a, b) => a - b));
   await page.goto('/');
-  const sustain = page.getByRole('button', { name: 'Sustain chord I', exact: true });
+  const sustain = page.getByRole('button', { name: 'SUSTAIN CHORD I', exact: true });
   await sustain.click();
   await expect(sustain).toHaveAttribute('aria-pressed', 'true');
   await page.keyboard.down('1');

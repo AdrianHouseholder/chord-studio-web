@@ -17,7 +17,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('live controls update held and sustained layers', async ({ page }) => {
-  await page.getByRole('button', { name: 'Sustain chord I', exact: true }).click();
+  await page.getByRole('button', { name: 'SUSTAIN CHORD I', exact: true }).click();
   await page.keyboard.press('1'); await page.keyboard.down('2');
   const notes = () => page.evaluate(() => window.notes.filter(n => !n.stopped).map(n => ({ note: n.note, type: n.type, gain: n.gain.value })));
   expect((await notes()).map(n => n.note).sort((a,b) => a-b)).toEqual([60,62,64,65,67,69]);
@@ -38,7 +38,7 @@ test('live controls update held and sustained layers', async ({ page }) => {
 test('turning off isolates reverb tails and releases captured pad pointer without restarting', async ({ page }) => {
   await page.getByLabel('Reverb').selectOption('hall');
   await page.keyboard.press('1'); // Leave a convolver tail.
-  const pad = page.getByRole('button', { name: 'Play chord ii', exact: true });
+  const pad = page.getByRole('button', { name: 'PLAY CHORD ii', exact: true });
   await pad.scrollIntoViewIfNeeded();
   const box = await pad.boundingBox();
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
@@ -65,7 +65,7 @@ test('turning off releases a captured joystick and ignores its later movement an
   await page.mouse.move(box.x + box.width / 2, box.y + 10);
   await page.mouse.down();
   expect(await joystick.evaluate(el => el.hasPointerCapture(1))).toBe(true);
-  await expect(page.locator('#joystick-status')).toHaveText('up');
+  await expect(page.locator('#joystick-status')).toHaveText('UP');
   await page.getByRole('button', { name: 'Turn Everything Off' }).focus();
   await page.keyboard.press('Enter');
   expect(await joystick.evaluate(el => el.hasPointerCapture(1))).toBe(false);
@@ -73,7 +73,7 @@ test('turning off releases a captured joystick and ignores its later movement an
   await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
   await page.mouse.up();
   await page.keyboard.up('1');
-  await expect(page.locator('#joystick-status')).toHaveText('center');
+  await expect(page.locator('#joystick-status')).toHaveText('CENTER');
   expect(await page.evaluate(() => ({ count: window.notes.length, sounding: window.notes.filter(n => !n.stopped).length }))).toEqual({ count, sounding: 0 });
 });
 

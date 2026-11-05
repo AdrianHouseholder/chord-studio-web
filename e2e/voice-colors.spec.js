@@ -15,7 +15,7 @@ test('new voices and colors update sustained chords and labels', async ({ page }
     };
   });
   await page.goto('/');
-  await page.getByRole('button', { name: 'Sustain chord I', exact: true }).click();
+  await page.getByRole('button', { name: 'SUSTAIN CHORD I', exact: true }).click();
   await page.keyboard.press('1');
   await page.getByLabel('VOICE').selectOption('Pulse');
   expect(await page.evaluate(() => window.notes.filter(n => !n.stopped).map(n => n.type))).toEqual(['square', 'square', 'square']);
@@ -38,7 +38,7 @@ test('tour follows the layout from visualizer to reset', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Start guided tour' }).click();
   const tour = page.getByRole('dialog', { name: 'Guided tour' });
-  for (const [index, title] of ['Audio visualizer', 'Sound controls', 'Chord joystick', 'Pitch bend', 'Metronome', 'Stopping and resetting', 'Keyboard bindings', 'Play chords', 'Sustain chords'].entries()) {
+  for (const [index, title] of ['Audio visualizer', 'Sound controls', 'Chord joystick', 'Pitch bend', 'Metronome', 'Stopping and resetting', 'Keyboard bindings', 'Play chords', 'Sustain chords'].map(title => title.toUpperCase()).entries()) {
     if (index) await tour.getByRole('button', { name: 'Next' }).click();
     await expect(tour.getByRole('heading')).toHaveText(title);
   }

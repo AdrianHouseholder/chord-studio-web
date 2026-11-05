@@ -28,5 +28,5 @@ test('holds and releases all seven keyboard chords simultaneously', async ({ pag
     expect(await page.evaluate(() => window.testOscillators.filter(o => o.started && !o.stopped).length)).toBe((6 - i) * 3);
   }
   expect(await page.evaluate(() => window.testOscillators.length)).toBe(21);
-  await expect(page.locator('.screen strong')).toHaveText('Ready to play');
+  await expect(page.locator('.screen strong')).toHaveText('READY TO PLAY');
 });

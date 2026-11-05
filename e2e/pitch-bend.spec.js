@@ -19,7 +19,7 @@ test.beforeEach(async ({ page }) => {
 test('bends held and sustained layers continuously, including future and rebuilt voices', async ({ page }) => {
   const slider = page.getByRole('slider', { name: 'Pitch bend' });
   await expect(slider).toHaveValue('0');
-  await page.getByRole('button', { name: 'Sustain chord I', exact: true }).click();
+  await page.getByRole('button', { name: 'SUSTAIN CHORD I', exact: true }).click();
   await page.keyboard.press('1'); await page.keyboard.down('2');
   const state = () => page.evaluate(() => ({ count: window.notes.length, frequencies: window.notes.filter(n => !n.stopped).map(n => n.frequency.value) }));
   const initial = await state();
@@ -50,8 +50,8 @@ test('vertical control is beside joystick, keyboard accessible and fits mobile',
   expect((await slider.boundingBox()).x).toBeGreaterThan((await joy.boundingBox()).x);
   await slider.focus(); await page.keyboard.press('ArrowUp');
   await expect(slider).not.toHaveValue('0');
-  await expect(page.locator('#joystick-status')).toHaveText('center');
-  await expect(page.locator('.pitch-bend output')).toContainText('semitones');
+  await expect(page.locator('#joystick-status')).toHaveText('CENTER');
+  await expect(page.locator('.pitch-bend output')).toContainText('SEMITONES');
   await page.setViewportSize({ width: 375, height: 800 });
   const box = await slider.boundingBox();
   expect(box.x).toBeGreaterThanOrEqual(0);

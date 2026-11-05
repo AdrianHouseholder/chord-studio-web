@@ -23,6 +23,7 @@
   border-radius: 3px;
   box-shadow: inset 0 0 12px #37efda12;
 }
+:root[data-theme="neon"] .visualizer canvas { border-color: var(--accent); }
 :root[data-theme="neon"] :is(.screen-top, .screen-bottom) { color: #8bd6cc; }
 :root[data-theme="neon"] :is(.pad, .controls select, .switches button, .sustain, .theme-picker select, .tour-launch, .reset-configuration, .pitch-bend button) {
   border-radius: 3px;
@@ -39,7 +40,14 @@
   border-color: var(--accent);
   color: #e5fffb;
 }
-:root[data-theme="neon"] :is(.volume input, .pitch-bend input) { accent-color: var(--accent); }
+:root[data-theme="neon"] .control-grid .joystick > .joy-knob {
+  background: linear-gradient(145deg, #327c75, #1b4948);
+  box-shadow: 0 3px 5px #0008;
+}
+:root[data-theme="neon"] .visualizer .switches button { border-color: #246e69; }
+:root[data-theme="neon"] .visualizer .switches .selected { border-color: var(--accent); }
+:root[data-theme="neon"] .pitch-bend input,
+:root[data-theme="neon"] .controls .volume input { accent-color: var(--accent); }
 :root[data-theme="neon"] .joystick-sustain[aria-pressed="true"] .toggle-track { background: #278e81; }
 :root[data-theme="neon"] :is(header, .control-grid) { border-color: #246e69; }
 :root[data-theme="neon"] :is(.header-note, .brand-sub, footer) { color: #8bbab4; }

@@ -55,7 +55,7 @@ test('repressing a latched sustained chord stops it without disabling sustain or
     };
   });
   await page.goto('/');
-  const sustain = page.getByRole('button', { name: 'Sustain chord I', exact: true });
+  const sustain = page.getByRole('button', { name: 'SUSTAIN CHORD I', exact: true });
   await sustain.click();
   await page.keyboard.down('1'); await page.keyboard.up('1');
   await page.keyboard.down('2');

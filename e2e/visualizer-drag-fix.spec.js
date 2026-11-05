@@ -40,8 +40,8 @@ const sounding = page => page.evaluate(() => window.notes.filter(note => !note.s
 
 test('mouse drag switches audio and visual from original pad, including outside and release', async ({ page }) => {
   await page.goto('/');
-  const first = page.getByRole('button', { name: 'Play chord I', exact: true });
-  const second = page.getByRole('button', { name: 'Play chord ii', exact: true });
+  const first = page.getByRole('button', { name: 'PLAY CHORD I', exact: true });
+  const second = page.getByRole('button', { name: 'PLAY CHORD ii', exact: true });
   await first.scrollIntoViewIfNeeded();
   const a = await position(first), b = await position(second);
   const idle = await second.evaluate(el => getComputedStyle(el).backgroundColor);
@@ -61,9 +61,9 @@ test('mouse drag switches audio and visual from original pad, including outside 
 
 test('sustain and layered keyboard notes survive pointer movement and keyboard focus remains visible', async ({ page }) => {
   await page.goto('/');
-  const first = page.getByRole('button', { name: 'Play chord I', exact: true });
-  const second = page.getByRole('button', { name: 'Play chord ii', exact: true });
-  await page.getByRole('button', { name: 'Sustain chord I', exact: true }).click();
+  const first = page.getByRole('button', { name: 'PLAY CHORD I', exact: true });
+  const second = page.getByRole('button', { name: 'PLAY CHORD ii', exact: true });
+  await page.getByRole('button', { name: 'SUSTAIN CHORD I', exact: true }).click();
   await page.keyboard.down('3');
   await first.scrollIntoViewIfNeeded();
   const a = await position(first), b = await position(second);
@@ -72,7 +72,7 @@ test('sustain and layered keyboard notes survive pointer movement and keyboard f
   expect(await sounding(page)).toBe(9);
   await page.mouse.up(); expect(await sounding(page)).toBe(6);
   await page.keyboard.up('3'); expect(await sounding(page)).toBe(3);
-  await page.getByRole('button', { name: 'Sustain chord I', exact: true }).click();
+  await page.getByRole('button', { name: 'SUSTAIN CHORD I', exact: true }).click();
   expect(await sounding(page)).toBe(0);
   await first.focus();
   await page.keyboard.press('Tab');
