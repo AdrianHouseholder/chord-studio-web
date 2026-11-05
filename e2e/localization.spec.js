@@ -6,35 +6,35 @@ test('translates controls, stable options, history and the complete tour', async
   await expect(page.getByRole('region', { name: 'Instrumento de acordes' })).toBeVisible();
   await expect(page.getByRole('group', { name: 'Metrónomo' })).toBeVisible();
   await expect(page.getByRole('group', { name: 'Modo del visualizador' })).toBeVisible();
-  await expect(page.getByLabel('Modulación de tono')).toHaveAttribute('aria-valuetext', '0 semitonos');
-  await expect(page.getByRole('button', { name: 'Sostener acorde I', exact: true })).toBeVisible();
+  await expect(page.getByLabel('Modulación de tono')).toHaveAttribute('aria-valuetext', '0 SEMITONOS');
+  await expect(page.getByRole('button', { name: 'SOSTENER ACORDE I', exact: true })).toBeVisible();
   await expect(page.getByLabel('Tempo del metrónomo')).toHaveValue('120');
   await expect(page.getByRole('button', { name: 'Forma de onda' })).toHaveAttribute('aria-pressed', 'true');
   await page.getByLabel('VOZ').selectOption('Bright');
-  await expect(page.getByLabel('VOZ').locator('option:checked')).toHaveText('Brillante');
+  await expect(page.getByLabel('VOZ').locator('option:checked')).toHaveText('BRILLANTE');
   await page.getByLabel('Reverberación').selectOption('hall');
   await page.getByLabel('COLOR DEL ACORDE').selectOption('seventh');
-  await page.getByRole('button', { name: 'Tocar acorde I', exact: true }).click();
+  await page.getByRole('button', { name: 'TOCAR ACORDE I', exact: true }).click();
   await page.getByRole('button', { name: 'Historial de acordes' }).click();
   const history = page.getByRole('region', { name: 'Historial de acordes' });
-  await expect(history).toContainText('Brillante');
-  await expect(history).toContainText('Sala de conciertos');
-  await expect(history).toContainText('Séptima');
-  await page.getByRole('button', { name: 'Tocar acorde I', exact: true }).click({ button: 'right' });
+  await expect(history).toContainText('BRILLANTE');
+  await expect(history).toContainText('SALA DE CONCIERTOS');
+  await expect(history).toContainText('SÉPTIMA');
+  await page.getByRole('button', { name: 'TOCAR ACORDE I', exact: true }).click({ button: 'right' });
   await expect(page.getByRole('dialog', { name: 'Asignar acorde I' })).toBeVisible();
   await page.getByRole('button', { name: 'Cancelar' }).click();
   await page.getByRole('button', { name: 'Iniciar recorrido guiado' }).click();
   const tour = page.getByRole('dialog', { name: 'Recorrido guiado' });
   for (const [title, description] of [
-    ['Visualizador de audio', 'La pantalla muestra'],
-    ['Controles de sonido', 'Elige la tonalidad mayor'],
-    ['Joystick de acordes', 'Arrastra el joystick'],
-    ['Modulación de tono', 'Mueve el control'],
-    ['Metrónomo', 'Inicia o detén el metrónomo'],
-    ['Detener y restablecer', 'Apagar todo detiene'],
-    ['Asignaciones de teclado', 'Haz clic derecho'],
-    ['Tocar acordes', 'Mantén pulsado un pad'],
-    ['Sostener acordes', 'Activa Sostener'],
+    ['Visualizador de audio', 'LA PANTALLA MUESTRA'],
+    ['Controles de sonido', 'ELIGE LA TONALIDAD MAYOR'],
+    ['Joystick de acordes', 'ARRASTRA EL JOYSTICK'],
+    ['Modulación de tono', 'MUEVE EL CONTROL'],
+    ['Metrónomo', 'INICIA O DETÉN EL METRÓNOMO'],
+    ['Detener y restablecer', 'APAGAR TODO DETIENE'],
+    ['Asignaciones de teclado', 'HAZ CLIC DERECHO'],
+    ['Tocar acordes', 'MANTÉN PULSADO UN PAD'],
+    ['Sostener acordes', 'ACTIVA SOSTENER'],
   ]) {
     await expect(tour.getByRole('heading', { name: title })).toBeVisible();
     await expect(tour.locator('#tour-description')).toContainText(description);
@@ -45,9 +45,9 @@ test('translates controls, stable options, history and the complete tour', async
   await expect(page.getByLabel('VOICE')).toHaveValue('Bright');
   await expect(page.getByLabel('Reverb')).toHaveValue('hall');
   await expect(page.getByLabel('CHORD COLOR')).toHaveValue('seventh');
-  await expect(page.getByLabel('Pitch bend')).toHaveAttribute('aria-valuetext', '0 semitones');
+  await expect(page.getByLabel('Pitch bend')).toHaveAttribute('aria-valuetext', '0 SEMITONES');
   await expect(page.getByRole('button', { name: 'Waveform' })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByRole('region', { name: 'Chord history' })).toContainText('Bright');
+  await expect(page.getByRole('region', { name: 'Chord history' })).toContainText('BRIGHT');
 });
 
 test('defaults to English for an unsupported browser language', async ({ page }) => {
@@ -105,10 +105,10 @@ test('switches language immediately and remembers the choice', async ({ page }) 
 
 test('translates named keyboard bindings without changing playback binding', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Play chord I', exact: true }).click({ button: 'right' });
+  await page.getByRole('button', { name: 'PLAY CHORD I', exact: true }).click({ button: 'right' });
   await page.keyboard.press('ArrowUp');
   await page.getByLabel('Language').selectOption('es');
-  await expect(page.locator('.pad[data-degree="0"] small')).toHaveText('Flecha arriba');
+  await expect(page.locator('.pad[data-degree="0"] small')).toHaveText('FLECHA ARRIBA');
   await page.getByLabel('Idioma').selectOption('en');
-  await expect(page.locator('.pad[data-degree="0"] small')).toHaveText('arrowup');
+  await expect(page.locator('.pad[data-degree="0"] small')).toHaveText('ARROWUP');
 });
