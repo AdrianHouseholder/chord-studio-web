@@ -37,12 +37,15 @@ Open the local URL printed by Vite. Close or finish the first-visit tour, then h
 
 ## Under the hood
 
-Built with **React**, **Vite**, and the **Web Audio API**. To run the unit tests or create a production build:
+Built with **React**, **Vite**, and the **Web Audio API**. To run the unit tests, lint the source and end-to-end tests with Biome, or create a production build:
 
 ```sh
 bun run test
+bun run lint
 bun run build
 ```
+
+The lint command may report warnings as well as errors; warnings do not cause it to fail.
 
 - [Playing guide](docs/playing.md) — controls, sustain, bindings, joystick, and more.
 - [Architecture and development](docs/architecture.md) — audio, state, storage, lifecycle, and testing.
