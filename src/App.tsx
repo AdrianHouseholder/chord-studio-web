@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { chordNotes, chordName, noteNames } from './music/chords.js';
+import { createAudioTransitions } from './music/audio-transition.js';
 import GuidedTour from './components/GuidedTour';
 import Visualizer from './components/Visualizer';
 import Metronome from './components/Metronome';
@@ -112,6 +113,7 @@ export default function App() {
     }
   };
   const playing = useRef(new Map<number, PlayingNote[]>());
+  const transitions = useRef<ReturnType<typeof createAudioTransitions> | null>(null);
   const held = useRef(new Map<number, Set<string>>());
   const padPointers = useRef(new Map<number, number | null>());
   const [draggingPads, setDraggingPads] = useState(false);
@@ -136,12 +138,7 @@ export default function App() {
   const stop = (degree: number) => {
     const notes = playing.current.get(degree);
     if (!notes) return;
-    const now = audio.current!.currentTime;
-    notes.forEach(({ osc, gain }) => {
-      gain.gain.cancelScheduledValues(now);
-      gain.gain.setTargetAtTime(0, now, 0.045);
-      osc.stop(now + 0.3);
-    });
+    transitions.current!.release(degree);
     playing.current.delete(degree);
     activeRef.current.delete(degree);
     setActive([...activeRef.current.keys()]);
@@ -152,30 +149,26 @@ export default function App() {
     }
   };
   const play = (degree: number, color = directionRef.current, settings: SoundSettings = { key, variation, voice, volume }) => {
-    stop(degree);
     const context = audio.current ||= new (window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext!)();
     context.resume();
     clearTimeout(tailTimer.current);
     setTail(false);
     reverbGraph.current ||= createReverbGraph(context, reverbRef.current);
     analyser.current = reverbGraph.current.output;
-    const now = context.currentTime;
-    const notes: PlayingNote[] = [];
-    chordNotes(settings.key, degree, settings.variation, color).forEach(note => {
+    transitions.current ||= createAudioTransitions(context, (note: number, voice: string) => {
       const osc = context.createOscillator();
       const gain = context.createGain();
-      const waveform = voices[settings.voice];
+      const waveform = voices[voice];
       if (Array.isArray(waveform)) osc.setPeriodicWave(context.createPeriodicWave(new Float32Array(waveform.length), new Float32Array(waveform)));
       else osc.type = waveform;
       const frequency = 440 * 2 ** ((note - 69) / 12);
       osc.frequency.value = frequency * 2 ** (pitchBendRef.current / 12);
-      gain.gain.setValueAtTime(0, now);
-      gain.gain.linearRampToValueAtTime(settings.volume * 0.12, now + 0.025);
       osc.connect(gain);
       gain.connect(reverbGraph.current!.input);
-      osc.start(now);
-      notes.push({ osc, gain, frequency });
+      return { osc, gain, frequency, note, voice };
     });
+    const notes: PlayingNote[] = transitions.current.transition(degree, chordNotes(settings.key, degree, settings.variation, color), settings.voice, settings.volume);
+    for (const { osc, frequency } of notes) osc.frequency.value = frequency * 2 ** (pitchBendRef.current / 12);
     playing.current.set(degree, notes);
     activeRef.current.set(degree, true);
     setActive([...activeRef.current.keys()]);
@@ -197,7 +190,7 @@ export default function App() {
     clearTimeout(tailTimer.current); setTail(false);
     // Discard the old convolution paths so a later preset cannot revive their tail.
     reverbGraph.current?.output.disconnect();
-    reverbGraph.current = null; analyser.current = null;
+    reverbGraph.current = null; analyser.current = null; transitions.current = null;
     directionRef.current = 'center'; setDirection('center'); setJoystickSustain(false);
     setBindingDegree(null);
   };
