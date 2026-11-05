@@ -86,3 +86,58 @@ test('ended tails are forgotten and can be recreated', () => {
   assert.notEqual(engine.transition(0, [60], 'Warm', 0.4)[0], first);
   assert.equal(created.length, 2);
 });
+
+// Voice-change crossfade tests
+test('voice change cancels old automation and scales new target by half', () => {
+  const { engine, created, context } = fixture();
+  engine.transition(0, [60], 'Warm', 0.4);
+  context.currentTime = 1;
+  // Voice change: Warm → Soft
+  engine.transition(0, [60], 'Soft', 0.4);
+  const oldNote = created[0];
+  // cancelScheduledValues should have been called (crossfade)
+  assert.ok(oldNote.events.some(e => e[0] === 'cancel' && e[1] === 1));
+  // New note target scaled by (1 + 1) = 2: volume * 0.12 / 2
+  const newNote = created[1];
+  assert.deepEqual(newNote.events.filter(e => e[0] === 'ramp'), [
+    ['ramp', 0.024, 1.025]
+  ]);
+});
+
+test('single-pitch overlap scales new target by half (1 + 1 = 2)', () => {
+  const { engine, created, context } = fixture();
+  engine.transition(0, [60], 'Warm', 0.4);
+  context.currentTime = 1;
+  // Voice change: all notes crossfade, new target scaled by (1 + 1) = 2
+  engine.transition(0, [60], 'Soft', 0.4);
+  assert.deepEqual(created[1].events.filter(e => e[0] === 'ramp'), [
+    ['ramp', 0.024, 1.025]
+  ]); // volume * 0.12 / 2 = 0.048 / 2 = 0.024
+});
+
+test('multi-pitch overlap scales each pitch independently by its release count', () => {
+  const { engine, created, context } = fixture();
+  // Start with triad: C4(60), E4(64), G4(67)
+  engine.transition(0, [60, 64, 67], 'Warm', 0.4);
+  context.currentTime = 1;
+  // Voice change to Soft — all three pitches release
+  engine.transition(0, [60, 64, 67], 'Soft', 0.4);
+  const newNotes = created.slice(3, 6); // notes at indices 3, 4, 5
+  // Each pitch has exactly one releasing oscillator → scale by (1 + 1) = 2
+  for (const note of newNotes) {
+    assert.deepEqual(note.events.filter(e => e[0] === 'ramp'), [
+      ['ramp', 0.024, 1.025]
+    ]);
+  }
+});
+
+test('direction-only change does not trigger crossfade (regression)', () => {
+  const { engine, created, context } = fixture();
+  engine.transition(0, [60, 64, 67], 'Warm', 0.4);
+  context.currentTime = 1;
+  // Direction change only: voice stays Warm
+  engine.transition(0, [60, 65, 67], 'Warm', 0.4);
+  const oldNote = created[1];
+  // No cancelScheduledValues before release (crossfade was NOT triggered)
+  assert.ok(!oldNote.events.some(e => e[0] === 'cancel' && e[1] === 1));
+});

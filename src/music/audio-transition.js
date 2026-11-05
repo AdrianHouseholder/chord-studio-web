@@ -28,10 +28,39 @@ export function createAudioTransitions(context, createNote) {
     };
   }
 
+  /** Crossfade all active notes when voice changes, preventing volume spike. */
+  function crossfadeVoiceChange(degree, now) {
+    const previous = active.get(degree) || [];
+    // Count releasing oscillators per pitch (for proportional scaling of new targets)
+    const releaseCountByPitch = new Map();
+    for (const note of previous) {
+      releaseCountByPitch.set(note.note, (releaseCountByPitch.get(note.note) || 0) + 1);
+    }
+    // Cancel existing automation and schedule linear ramp-down over ~50ms
+    for (const note of previous) {
+      const { gain } = note.gain;
+      if (typeof gain.cancelScheduledValues === 'function') {
+        gain.cancelScheduledValues(now);
+      } else {
+        holdGain(gain, now);
+      }
+      // setTargetAtTime(0, now, 0.043) ≈ linear ramp to 0 in ~50ms
+      gain.setTargetAtTime(0, now, 0.043);
+    }
+    return releaseCountByPitch;
+  }
+
   return {
     transition(degree, pitches, voice, volume) {
       const now = context.currentTime;
       const previous = [...(active.get(degree) || [])];
+      // Detect voice change: all active notes have different voice from target
+      const isVoiceChange = previous.length > 0 &&
+        previous.every(note => note.voice !== voice);
+      let releaseCountByPitch = new Map();
+      if (isVoiceChange) {
+        releaseCountByPitch = crossfadeVoiceChange(degree, now);
+      }
       const pending = tails.get(degree);
       const next = pitches.map(pitch => {
         let index = previous.findIndex(note => note.note === pitch && note.voice === voice);
@@ -47,7 +76,11 @@ export function createAudioTransitions(context, createNote) {
         } else {
           note = createNote(pitch, voice);
           note.gain.gain.setValueAtTime(0, now);
-          note.gain.gain.linearRampToValueAtTime(volume * 0.12, now + 0.025);
+          // Scale target proportionally to release count at this pitch (bounds combined gain during overlap)
+          const overlapScale = releaseCountByPitch.get(pitch) !== undefined
+            ? 1 + releaseCountByPitch.get(pitch)
+            : 1;
+          note.gain.gain.linearRampToValueAtTime(volume * 0.12 / overlapScale, now + 0.025);
           note.osc.start(now);
         }
         return note;
