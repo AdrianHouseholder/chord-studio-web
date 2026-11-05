@@ -23,7 +23,7 @@ test.beforeEach(async ({ page }) => {
     window.AudioContext = class {
       currentTime = 0; sampleRate = 100; destination = {};
       resume() {} close() {}
-      createBuffer(channels, length) { return { getChannelData() { return new Float32Array(length); } }; }
+      createBuffer(_channels, length) { return { getChannelData() { return new Float32Array(length); } }; }
       createConvolver() { return { connect() {} }; }
       createAnalyser() { return { connect() {}, fftSize: 2048, frequencyBinCount: 1024, getByteTimeDomainData(data) { data.fill(128); }, getByteFrequencyData(data) { data.fill(0); } }; }
       createGain() { return { gain: { setValueAtTime() {}, linearRampToValueAtTime() {}, cancelScheduledValues() {}, setTargetAtTime() {} }, connect() {} }; }

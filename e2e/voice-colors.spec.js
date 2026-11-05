@@ -6,11 +6,11 @@ test('new voices and colors update sustained chords and labels', async ({ page }
     window.AudioContext = class {
       currentTime = 1; sampleRate = 100; destination = {};
       resume() {} close() {}
-      createBuffer(c, n) { return { getChannelData: () => new Float32Array(n) }; }
+      createBuffer(_c, n) { return { getChannelData: () => new Float32Array(n) }; }
       createConvolver() { return { connect() {} }; }
       createAnalyser() { return { connect() {}, disconnect() {}, fftSize: 32, frequencyBinCount: 16, getByteTimeDomainData() {}, getByteFrequencyData() {} }; }
       createGain() { return { gain: { setValueAtTime() {}, linearRampToValueAtTime() {}, cancelScheduledValues() {}, setTargetAtTime() {} }, connect() {} }; }
-      createPeriodicWave(real, imag) { return Array.from(imag); }
+      createPeriodicWave(_real, imag) { return Array.from(imag); }
       createOscillator() { const n = { stopped: false }; return { frequency: {}, connect() {}, setPeriodicWave(w) { n.wave = w; }, start() { n.type = this.type; n.note = Math.round(69 + 12 * Math.log2(this.frequency.value / 440)); window.notes.push(n); }, stop() { n.stopped = true; } }; }
     };
   });

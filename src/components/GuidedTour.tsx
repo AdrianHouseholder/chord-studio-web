@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 const tourSteps = [
   { title: 'Audio visualizer', anchor: '.visualizer', text: 'The display shows the current chord and the combined audio output. Switch between Waveform and Spectrum without changing the sound.' },
@@ -46,9 +46,9 @@ export default function GuidedTour({ onClose }: { onClose: () => void }) {
   }, [step]);
   useEffect(() => { panel.current?.querySelector<HTMLElement>('[data-initial]')?.focus(); }, []);
   useEffect(() => {
-    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') { event.preventDefault(); onClose(); } };
-    window.addEventListener('keydown', escape);
-    return () => window.removeEventListener('keydown', escape);
+    const handleEscape = (event: KeyboardEvent) => { if (event.key === 'Escape') { event.preventDefault(); onClose(); } };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
   }, [onClose]);
   return <><div className="tour-backdrop" aria-hidden="true">
     <div className="tour-shade" style={{ left: 0, top: 0, right: 0, height: spotlight.top }} />

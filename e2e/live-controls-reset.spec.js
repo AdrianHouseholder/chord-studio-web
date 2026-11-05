@@ -6,9 +6,9 @@ test.beforeEach(async ({ page }) => {
     window.AudioContext = class {
       currentTime = 1; sampleRate = 100; destination = {};
       resume() {} close() {}
-      createBuffer(c, n) { return { getChannelData() { return new Float32Array(n); } }; }
+      createBuffer(_c, n) { return { getChannelData() { return new Float32Array(n); } }; }
       createConvolver() { return { connect() {} }; }
-      createAnalyser() { const analyser = { disconnected: false, connect() {}, disconnect() { this.disconnected = true; }, fftSize: 2048, frequencyBinCount: 1024, getByteTimeDomainData(d) { d.fill(128); }, getByteFrequencyData(d) { d.fill(0); } }; (window.outputs ||= []).push(analyser); return analyser; }
+      createAnalyser() { const analyser = { disconnected: false, connect() {}, disconnect() { this.disconnected = true; }, fftSize: 2048, frequencyBinCount: 1024, getByteTimeDomainData(d) { d.fill(128); }, getByteFrequencyData(d) { d.fill(0); } }; window.outputs ||= []; window.outputs.push(analyser); return analyser; }
       createGain() { const gain = { value: 0, setValueAtTime(v) { this.value = v; }, linearRampToValueAtTime(v) { this.value = v; }, cancelScheduledValues() {}, setTargetAtTime(v) { this.value = v; } }; window.gains.push(gain); return { gain, connect() {} }; }
       createOscillator() { const entry = { stopped: false }; return { frequency: {}, connect(g) { entry.gain = g.gain; }, start() { entry.note = Math.round(69 + 12 * Math.log2(this.frequency.value / 440)); entry.type = this.type; window.notes.push(entry); }, stop() { entry.stopped = true; } }; }
     };

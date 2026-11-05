@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
     window.AudioContext = class {
       currentTime = 1; sampleRate = 100; destination = {};
       resume() {} close() {}
-      createBuffer(c, n) { return { getChannelData() { return new Float32Array(n); } }; }
+      createBuffer(_c, n) { return { getChannelData() { return new Float32Array(n); } }; }
       createConvolver() { return { connect() {} }; }
       createAnalyser() { return { connect() {}, disconnect() {}, fftSize: 2048, frequencyBinCount: 1024, getByteTimeDomainData(d) { d.fill(128); }, getByteFrequencyData(d) { d.fill(0); } }; }
       createGain() { return { gain: { setValueAtTime() {}, linearRampToValueAtTime() {}, cancelScheduledValues() {}, setTargetAtTime() {} }, connect() {} }; }
@@ -27,10 +27,10 @@ test('bends held and sustained layers continuously, including future and rebuilt
   await slider.fill('2');
   let changed = await state();
   expect(changed.count).toBe(6);
-  changed.frequencies.forEach((frequency, i) => expect(frequency / initial.frequencies[i]).toBeCloseTo(2 ** (2 / 12), 6));
+  changed.frequencies.forEach((frequency, i) => { expect(frequency / initial.frequencies[i]).toBeCloseTo(2 ** (2 / 12), 6); });
   await slider.fill('-1');
   changed = await state();
-  changed.frequencies.forEach((frequency, i) => expect(frequency / initial.frequencies[i]).toBeCloseTo(2 ** (-1 / 12), 6));
+  changed.frequencies.forEach((frequency, i) => { expect(frequency / initial.frequencies[i]).toBeCloseTo(2 ** (-1 / 12), 6); });
   await slider.fill('0');
   expect((await state()).frequencies).toEqual(initial.frequencies);
   await slider.fill('2');

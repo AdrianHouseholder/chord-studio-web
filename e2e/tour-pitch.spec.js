@@ -8,7 +8,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 568 
     const next = tour.getByRole('button', { name: 'Next' });
     const observed = [];
     while (await next.isVisible()) {
-      const title = await tour.getByRole('heading').innerText();
+      const title = await tour.getByRole('heading').textContent();
       observed.push({ title, target: await page.evaluate(() => {
         const spot = document.querySelector('.tour-spotlight').getBoundingClientRect();
         return [...document.querySelectorAll('.controls, .pads, .pad-group .sustain, .chord-header, .joystick-control, .pitch-bend, .visualizer, .reset-actions')].filter(el => {
